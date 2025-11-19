@@ -97,29 +97,29 @@ return {
             float = false
         })
 
-        local capabilities = cmp_nvim_lsp.get_lsp_capabilities();
-        capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities({}, false))
-
-        vim.lsp.config('clangd', {
-            cmd = {
-                "clangd",
-                "--clang-tidy",
-                "--query-driver=C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/bin/*",
-                "--background-index"
-            },
-            capabilities = capabilities,
-            init_options = {
-                fallbackFlags =
-                {
-                    "--target=x86_64-w64-windows-gnu",
-                    "--std=gnu++23",
-                    -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/"
-                    -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
-                    -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
-                    -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
-                }
-            }
-        })
+        -- local capabilities = cmp_nvim_lsp.get_lsp_capabilities();
+        -- capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities({}, false))
+        --
+        -- vim.lsp.config('clangd', {
+        --     cmd = {
+        --         "clangd",
+        --         "--clang-tidy",
+        --         "--query-driver=C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/bin/*",
+        --         "--background-index"
+        --     },
+        --     capabilities = capabilities,
+        --     init_options = {
+        --         fallbackFlags =
+        --         {
+        --             "--target=x86_64-w64-windows-gnu",
+        --             "--std=gnu++23",
+        --             -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/"
+        --             -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
+        --             -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
+        --             -- "-I  C:/Users/Filip/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/include/
+        --         }
+        --     }
+        -- })
 
         -- Set your Java path
         local java_exec = "/usr/lib/jvm/java-21-amazon-corretto/bin/java"
