@@ -12,6 +12,7 @@ return {
             -- "pyright",
             -- "clangd",
             -- "powershell_es",
+            "angularls",
             "jdtls",
             "ts_ls",
         }
@@ -35,9 +36,6 @@ return {
         })
 
         mason_lspconfig.setup({
-            ensure_installed = {
-            },
-
             automatic_installation = false,
             automatic_enable = true,
         })

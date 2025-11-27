@@ -1,7 +1,14 @@
 return {
     'saghen/blink.cmp',
     dependencies = {
-        'rafamadriz/friendly-snippets',
+        {
+            'L3MON4D3/LuaSnip',
+            version = 'v2.*',
+            dependencies = { 'rafamadriz/friendly-snippets' },
+            config = function()
+                require("luasnip.loaders.from_vscode").lazy_load()
+            end
+        },
     },
     version = '1.*',
 
@@ -14,6 +21,8 @@ return {
             -- ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
         },
 
+        snippets = { preset = "luasnip" },
+
         appearance = {
             nerd_font_variant = 'mono'
         },
@@ -22,7 +31,7 @@ return {
         {
             documentation = { auto_show = true, auto_show_delay_ms = 500 },
             accept = {
-                auto_brackets = { enabled = true },     -- Disable parentheses for functions in PowerShell
+                auto_brackets = { enabled = true }, -- Disable parentheses for functions in PowerShell
             }
         },
 
