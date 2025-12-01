@@ -14,7 +14,7 @@ return {
 
         telescope.setup({
             defaults = {
-                -- path_display = { "smart" },
+                path_display = { "smart" },
                 mappings = {
                     i = {
                         ["<C-h>"] = function(prompt_bufnr)
@@ -27,7 +27,6 @@ return {
                             })
                         end,
                         ["<C-s>"] = actions.select_vertical,
-                        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
                     },
                 },
             },
