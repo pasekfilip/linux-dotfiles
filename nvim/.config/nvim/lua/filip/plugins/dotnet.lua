@@ -1,6 +1,7 @@
 return {
 	{
 		'MoaidHathot/dotnet.nvim',
+        enabled = false,
 		branch = 'dev',
 		cmd = "DatnetUI",
 		keys = {
