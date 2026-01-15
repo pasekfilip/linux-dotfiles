@@ -42,7 +42,7 @@ set("n", "<leader>yp", function()
     print("file:", path)
 end)
 
-set("n", "<F5>", function()
+set("n", "<leader>jb", function()
     -- --- JAVA BUILD AND DEPLOY ---
     if vim.bo.filetype == "java" then
         local cmd
