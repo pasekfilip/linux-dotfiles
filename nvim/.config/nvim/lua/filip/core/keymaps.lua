@@ -112,6 +112,7 @@ end, { noremap = true, silent = false }) -- Set silent=false to see the print me
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "sql", "mysql", "pgsql", "plsql" },
     callback = function()
+        vim.bo.commentstring = "-- %s"
         set("v", "x", ":DB<CR>", { buffer = true, silent = true })
     end
 })
