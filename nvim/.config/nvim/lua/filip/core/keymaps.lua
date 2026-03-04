@@ -43,64 +43,72 @@ set("n", "<leader>yp", function()
 end)
 
 set("n", "<leader>jb", function()
-    -- --- JAVA BUILD AND DEPLOY ---
-    if vim.bo.filetype == "java" then
-        local cmd
+	-- --- JAVA BUILD AND DEPLOY ---
+	if vim.bo.filetype == "java" then
+		-- NOTE: Assumes Tomcat was installed via a package manager like pacman
+		local tomcat_webapps_dir = "/usr/share/tomcat9/webapps/"
+		local source_war_path = "SignoSoftServer/target/SignoSoftServer.war"
+		local dest_war_path = tomcat_webapps_dir .. "api.war"
 
-        -- Check if we are on a Unix-like system (Linux, macOS)
-        if vim.fn.has("unix") == 1 then
-            -- NOTE: Assumes Tomcat was installed via a package manager like pacman
-            local tomcat_webapps_dir = "/usr/share/tomcat9/webapps/"
-            local source_war_path = "SignoSoftServer/target/SignoSoftServer.war"
-            local dest_war_path = tomcat_webapps_dir .. "api.war"
+		local build_cmd = string.format(
+			[[mvn clean package -DskipTests && rm -f %s && cp %s %s]],
+			dest_war_path,
+			source_war_path,
+			dest_war_path
+		)
+		print("Running Linux Java build & deploy...")
 
-            -- Build a sequence of commands that will run one after another
-            -- 1. Build the project
-            -- 2. Use sudo to remove the old .war file
-            -- 3. Use sudo to copy the new .war file
-            -- 4. Use sudo to restart the tomcat service so it picks up the changes
-            cmd = string.format(
-                [[mvn clean package -DskipTests && rm -f %s && cp %s %s]],
-                dest_war_path, source_war_path, dest_war_path
-            )
-            print("Running Linux Java build & deploy...")
+        local main_win = vim.api.nvim_get_current_win()
 
-            -- Check if we are on Windows
-        elseif vim.fn.has("win32") == 1 then
-            local home = vim.fn.expand("~")
-            -- NOTE: Corrected -DskipTestscd to -DskipTests
-            -- NOTE: Using && instead of ; for better command chaining
-            cmd = string.format(
-                [[pwsh -NoProfile -Command "mvn clean package -DskipTests && if (Test-Path '%s\Tomcat\webapps\api.war') { Remove-Item -Force '%s\Tomcat\webapps\api.war' } && Copy-Item 'SignoSoftServer\target\SignoSoftServer.war' '%s\Tomcat\webapps\api.war'"]],
-                home, home, home
-            )
-            print("Running Windows Java build & deploy...")
-        end
+        -- 1. Create the split
+        vim.cmd("botright 10split")
+        local term_win = vim.api.nvim_get_current_win()
+        local term_buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_win_set_buf(term_win, term_buf)
 
-        if cmd then
-            vim.cmd("term " .. cmd)
-        end
-    end
+        -- 2. Run the job inside the terminal buffer
+        vim.fn.jobstart(build_cmd, {
+            term = true, -- Enables terminal colors and behavior
+            on_exit = function(_, exit_code)
+                if exit_code == 0 then
+                    -- SUCCESS: Close the terminal window automatically
+                    if vim.api.nvim_win_is_valid(term_win) then
+                        vim.api.nvim_win_close(term_win, true)
+                    end
+                    vim.notify("🚀 Build & Deploy Successful!", vim.log.levels.INFO)
+                else
+                    -- FAILURE: Leave window open so you can read the error
+                    vim.notify("❌ Build Failed! Check the terminal below.", vim.log.levels.ERROR)
+                end
+            end,
+        })
 
-    -- --- C++ BUILD AND RUN ---
-    if vim.bo.filetype == "cpp" then
-        local cmd
-        local build_dir = vim.fs.joinpath(vim.fn.getcwd(), "build")
+        -- 3. FOLLOW THE PRINT (Auto-scroll)
+        -- To auto-scroll, the cursor must be on the last line of the terminal
+        vim.api.nvim_win_set_cursor(term_win, {vim.api.nvim_buf_line_count(term_buf), 0})
+        -- -- 4. Jump back to your code
+        -- vim.api.nvim_set_current_win(main_win)
+	end
 
-        if vim.fn.has("unix") == 1 then
-            -- On Linux, the executable usually has no extension
-            cmd = string.format("cd %s && cmake --build . && ./main", build_dir)
-            print("Running Linux C++ build...")
-        elseif vim.fn.has("win32") == 1 then
-            -- On Windows, it has .exe
-            cmd = string.format([[cd %s && cmake --build . && main.exe]], build_dir)
-            print("Running Windows C++ build...")
-        end
+	-- --- C++ BUILD AND RUN ---
+	if vim.bo.filetype == "cpp" then
+		local cmd
+		local build_dir = vim.fs.joinpath(vim.fn.getcwd(), "build")
 
-        if cmd then
-            vim.cmd("!" .. cmd)
-        end
-    end
+		if vim.fn.has("unix") == 1 then
+			-- On Linux, the executable usually has no extension
+			cmd = string.format("cd %s && cmake --build . && ./main", build_dir)
+			print("Running Linux C++ build...")
+		elseif vim.fn.has("win32") == 1 then
+			-- On Windows, it has .exe
+			cmd = string.format([[cd %s && cmake --build . && main.exe]], build_dir)
+			print("Running Windows C++ build...")
+		end
+
+		if cmd then
+			vim.cmd("!" .. cmd)
+		end
+	end
 end, { noremap = true, silent = false }) -- Set silent=false to see the print messages
 
 -- set("n", "<F5>", function()
