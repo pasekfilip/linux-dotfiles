@@ -31,8 +31,6 @@ opt.inccommand = "split" -- When doing /%s it opens split for preview
 opt.termguicolors = true -- Enable 24-bit colors
 opt.signcolumn = "yes" -- Always show sign column
 -- opt.colorcolumn = "150"                    -- Show column at 100 characters
-opt.showmatch = true -- Highlight matching brackets
-opt.matchtime = 2 -- How long to show matching bracket
 opt.cmdheight = 1 -- Command line height
 opt.completeopt = "menuone,noinsert,noselect" -- Completion options
 opt.showmode = false -- Don't show mode in command line
@@ -41,7 +39,6 @@ opt.pumblend = 10 -- Popup menu transparency
 opt.winblend = 0 -- Floating window transparency
 opt.conceallevel = 0 -- Don't hide markup
 opt.concealcursor = "" -- Don't hide cursor line markup
-opt.lazyredraw = true -- Don't redraw during macros
 opt.synmaxcol = 300 -- Syntax highlighting limit
 opt.more = true -- When message dosent fit on the screen it shows -- more --
 
@@ -65,11 +62,9 @@ opt.backspace = "indent,eol,start" -- Better backspace behavior
 opt.autochdir = false -- Don't auto change directory
 opt.iskeyword:append("-") -- Treat dash as part of word
 opt.path:append("**") -- include subdirectories in search
-opt.selection = "exclusive" -- Selection behavior
 opt.mouse = "a" -- Enable mouse support
 opt.clipboard:append("unnamedplus") -- Use system clipboard
 opt.modifiable = true -- Allow buffer modifications
-opt.encoding = "UTF-8" -- Set encoding
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 
 -- Split behavior
@@ -80,10 +75,6 @@ opt.splitright = true -- Vertical splits go right
 opt.foldmethod = "expr" -- Use expression for folding
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- Use treesitter for folding
 opt.foldlevel = 99 -- Start with all folds open
-
--- Performance improvements
-opt.redrawtime = 10000
-opt.maxmempattern = 20000
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
@@ -117,8 +108,3 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt.formatoptions = "jql"
 	end,
 })
---
--- local projectFile = vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot')
--- if projectFile > 0 then
--- 	vim.fn.serverstart("127.0.0.1:6666")
--- end
