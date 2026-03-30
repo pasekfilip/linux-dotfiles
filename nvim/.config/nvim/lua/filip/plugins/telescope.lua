@@ -15,29 +15,27 @@ return {
 		telescope.setup({
 			defaults = {
 				path_display = { "smart" },
-                -- 1. ADD THIS: Explicitly use ripgrep and ignore junk
-                vimgrep_arguments = {
-                    "rg",
-                    "--color=never",
-                    "--no-heading",
-                    "--with-filename",
-                    "--line-number",
-                    "--column",
-                    "--smart-case",
-                    "--trim", -- Helps with speed by trimming indentation
-                },
-                -- 2. ADD THIS: Ignore massive Java/Git folders
-                file_ignore_patterns = {
-                    "%.class",      -- Java compiled classes
-                    "target/",      -- Maven/Spring build folder
-                    "build/",       -- Gradle build folder
-                    "node_modules", -- If you have frontend
-                    ".git/",
-                    ".settings/",
-                    ".metadata/",
-                    "%.jar",
-                    "%.war",
-                },
+				vimgrep_arguments = {
+					"rg",
+					"--color=never",
+					"--no-heading",
+					"--with-filename",
+					"--line-number",
+					"--column",
+					"--smart-case",
+					"--trim", -- Helps with speed by trimming indentation
+				},
+				file_ignore_patterns = {
+					"%.class", -- Java compiled classes
+					"target/", -- Maven/Spring build folder
+					"build/", -- Gradle build folder
+					"node_modules", -- If you have frontend
+					".git/",
+					".settings/",
+					".metadata/",
+					"%.jar",
+					"%.war",
+				},
 				mappings = {
 					i = {
 						["<C-h>"] = function(prompt_bufnr)
@@ -53,34 +51,36 @@ return {
 					},
 				},
 			},
-            -- 3. ADD THIS: Tell FZF to override the default Lua sorter
-            extensions = {
-                fzf = {
-                    fuzzy = true,
-                    override_generic_sorter = true,
-                    override_file_sorter = true,
-                    case_mode = "smart_case",
-                }
-            },
+			-- 3. ADD THIS: Tell FZF to override the default Lua sorter
+			extensions = {
+				fzf = {
+					fuzzy = true,
+					override_generic_sorter = true,
+					override_file_sorter = true,
+					case_mode = "smart_case",
+				},
+			},
 			pickers = {
-                -- Optimization: use built-in find_files logic
-                find_files = {
-                    find_command = { "fd", "--type", "f", "--strip-cwd-prefix" }
-                },
+				-- Optimization: use built-in find_files logic
+				find_files = {
+					find_command = { "fd", "--type", "f", "--strip-cwd-prefix" },
+				},
 			},
 		})
 
 		telescope.load_extension("fzf")
 
 		-- ... your keymaps stay the same ...
-        local keymap = vim.keymap
+		local keymap = vim.keymap
 		keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Fuzzy find files in cwd" })
 		keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Fuzzy find recent files" })
 		keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
 		keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Find string in cwd" })
 		keymap.set("n", "<leader>fc", builtin.grep_string, { desc = "Find string under cursor in cwd" })
 		keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Get diagnostics" })
-		keymap.set("n", "<leader>fe", function() builtin.diagnostics({ severity = "ERROR" }) end, { desc = "Workspace Errors" })
+		keymap.set("n", "<leader>fe", function()
+			builtin.diagnostics({ severity = "ERROR" })
+		end, { desc = "Workspace Errors" })
 		keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help tags" })
 		keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
 	end,
