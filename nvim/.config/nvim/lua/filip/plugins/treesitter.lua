@@ -5,10 +5,7 @@ return {
 
 	dependencies = {
 		{ "nvim-treesitter/nvim-treesitter-textobjects" },
-		{
-			"windwp/nvim-ts-autotag",
-			lazy = true
-		},
+		"Badhi/nvim-treesitter-cpp-tools",
 		-- {
 		-- 	"nvim-treesitter/nvim-treesitter-context",
 		-- 	lazy = true,   -- load only after Treesitter is ready
@@ -23,17 +20,13 @@ return {
 	},
 
 	config = function()
-		-- import nvim-treesitter plugin
 		local treesitter = require("nvim-treesitter.configs")
 
 		treesitter.setup({
 			highlight = {
-				enable = true
+				enable = true,
 			},
 			indent = {
-				enable = true
-			},
-			autotag = {
 				enable = true,
 			},
 			ensure_installed = {
@@ -57,16 +50,16 @@ return {
 				"c_sharp",
 				"cpp",
 				"python",
-				"java"
+				"java",
 			},
-			auto_install = false,
-			sync_install = true,
+			auto_install = true,
+			sync_install = false,
 			ignore_install = {},
 			modules = {},
 			textobjects = {
 				move = {
 					enable = true,
-					set_jumps = true, -- adds to jumplist
+					set_jumps = true,
 					goto_previous_start = {
 						["[m"] = "@function.outer",
 						["[c"] = "@class.outer",
@@ -76,18 +69,25 @@ return {
 						["]c"] = "@class.outer",
 					},
 				},
-			}
-			-- incremental_selection = {
-			-- 	enable = true,
-			-- 	keymaps = {
-			-- 		init_selection = "<C-space>",
-			-- 		node_incremental = "<C-space>",
-			-- 		scope_incremental = false,
-			-- 		node_decremental = "<bs>",
-			-- 	},
-			-- },
+			},
 		})
-		-- vim.api.nvim_set_hl(0, "@type.class", { fg = "#88C0D0" }) -- blue-ish
-		-- vim.api.nvim_set_hl(0, "@type.enum", { fg = "#EBCB8B" }) -- yellow-ish
+
+		require("nt-cpp-tools").setup({
+			preview = {
+				quit = "q", -- quit preview window
+				accept = "<c-y>", -- accept the proposed implementation
+			},
+			header_extension = "h", -- default header extension
+			source_extension = "cpp", -- default source extension
+			custom_define_class_function_commands = { -- provide custom commands
+				TSCppImplWrite = {
+					output_handle = require("nt-cpp-tools.output_handlers").get_add_to_cpp(),
+				},
+			},
+		})
+
+		vim.keymap.set("n", "<leader>cf", "<cmd>TSCppDefineClassFunc<cr>", { desc = "Draft Class Functions" })
+		vim.keymap.set("v", "<leader>cf", ":TSCppDefineClassFunc<cr>", { desc = "Draft Selected Functions" })
+		vim.keymap.set("n", "<leader>cm", "<cmd>TSCppMakeConcreteClass<cr>", { desc = "Make Concrete Class" })
 	end,
 }
