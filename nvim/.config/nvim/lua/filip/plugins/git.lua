@@ -1,24 +1,25 @@
 return {
-    {
-        "sindrets/diffview.nvim",
-        dependencies = "nvim-lua/plenary.nvim",
-        cmd = { "DiffviewOpen", "DiffviewFileHistory" },
-        keys = {
-            { "<leader>gd", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
-            { "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diff View" },
-        },
-        config = function()
-            require("diffview").setup({
-                enhanced_diff_hl = true, -- Better syntax highlighting in diffs
-                view = {
-                    merge_tool = {
-                        layout = "diff3_mixed",
-                    },
-                },
-            })
-        end
-    },
-    {
+	{
+		"sindrets/diffview.nvim",
+		dependencies = "nvim-lua/plenary.nvim",
+		cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+		keys = {
+			{ "<leader>gd", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
+			{ "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diff View" },
+			{ "<leader>gw", "<cmd>DiffviewClose<cr>", desc = "Diff View" },
+		},
+		config = function()
+			require("diffview").setup({
+				enhanced_diff_hl = true, -- Better syntax highlighting in diffs
+				view = {
+					merge_tool = {
+						layout = "diff3_mixed",
+					},
+				},
+			})
+		end,
+	},
+	{
 		"tpope/vim-fugitive",
 	},
 	{
