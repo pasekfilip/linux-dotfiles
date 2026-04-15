@@ -75,6 +75,7 @@ opt.splitright = true -- Vertical splits go right
 opt.foldmethod = "expr" -- Use expression for folding
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- Use treesitter for folding
 opt.foldlevel = 99 -- Start with all folds open
+vim.opt.fillchars = { fold = " " }
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",

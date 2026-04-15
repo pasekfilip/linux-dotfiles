@@ -52,6 +52,7 @@ return {
 					hl.DiffDelete = { bg = diff_delete }
 					hl.DiffChange = { bg = diff_change }
 					hl.DiffText = { bg = diff_text }
+					hl.Folded = { fg = c.comment, bg = "NONE" }
 
 					-- This makes the "filler" lines (the '-' lines) disappear
 					-- and look like a clean background instead.
