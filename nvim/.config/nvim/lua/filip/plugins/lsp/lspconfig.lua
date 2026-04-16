@@ -133,7 +133,6 @@ return {
 				workspace_dir,
 			},
 			root_dir = root_dir,
-			capabilities = capabilities,
 			filetypes = { "java" },
 			-- root_markers = { ".git", "pom.xml", "build.gradle" },
 			settings = {
@@ -141,22 +140,18 @@ return {
 					autobuild = {
 						enabled = true, -- Avoid constant rebuilds
 					},
-					-- contentProvider = { preferred = 'javap' },
-					configuration = {
-						-- runtimes = {
-						-- {
-						--     name = "JavaSE-11",
-						--     path = "C:/Program Files/Amazon Corretto/jdk11.0.27_6/",
-						--     default = true,
-						-- },
-						-- {
-						--     name = "JavaSE-21",
-						--     path = "C:/Program Files/Amazon Corretto/jdk21.0.7_6/",
-						--     default = true,
-						-- },
-						-- },
-						updateBuildConfiguration = "interactive",
+					references = {
+						includeAccessors = true, -- Important for DTOs!
+						includeDecompiledSources = true,
 					},
+					-- 2. CHANGE THIS: Set to 'automatic' instead of 'interactive'
+					-- This ensures that when you change a DTO, the index updates immediately
+					configuration = {
+						updateBuildConfiguration = "automatic",
+					},
+					-- 3. ADD THIS: Better indexing for large projects
+					format = { enabled = true },
+					saveActions = { organizeImports = true },
 				},
 			},
 		})
