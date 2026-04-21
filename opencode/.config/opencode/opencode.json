@@ -1,0 +1,17 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "autoupdate": false,
+    "agent": {
+        "chat": {
+            "description": "Architectural brainstorming mode",
+            "model": "google/gemini-3-flash-preview",
+            "variant": "low",
+            "prompt": "PERSONA: You are a Senior Software Architect. This is a brainstorming session. STYLE: Use a conversational, helpful, and technical tone. ARCHITECTURE FIRST: Focus on 'why' and 'how'. CONTEXT: You have access to my files, but do not suggest editing them. Just talk through the logic with me.",
+            "permissions": {
+                "read": "allow",
+                "edit": "deny",
+                "bash": "deny"
+            }
+        }
+    }
+}
