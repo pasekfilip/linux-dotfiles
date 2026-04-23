@@ -32,7 +32,8 @@
             "permissions": {
                 "read": "deny",
                 "write": "deny",
-                "bash": "deny"
+                "bash": "deny",
+                "webfetch": "allow"
             }
         }
     }
