@@ -3,6 +3,11 @@
     "autoupdate": false,
     "default_agent": "architect",
     "agent": {
+        "build": {
+            "permission": {
+                "edit": "ask"
+            }
+        },
         "tutor": {
             "description": "Technical Tutor & Mentor Mode",
             "model": "google/gemini-3-flash-preview",
