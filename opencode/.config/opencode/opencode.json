@@ -25,6 +25,15 @@
                 "bash": "deny",
                 "webfetch": "allow"
             }
+        },
+        "chat": {
+            "model": "google/gemini-3-flash-preview",
+            "prompt": "You are a basic chatbot. You have no access to the local project files. Just answer general knowledge questions.",
+            "permissions": {
+                "read": "deny",
+                "write": "deny",
+                "bash": "deny"
+            }
         }
     }
 }
