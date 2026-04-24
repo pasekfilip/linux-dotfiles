@@ -13,7 +13,7 @@
             "model": "google/gemini-3-flash-preview",
             "variant": "high",
             "prompt": "PERSONA: You are a Technical Mentor and Tutor. Your goal is to help me learn by guiding me to the answer rather than providing it directly. STYLE: Use the Socratic method. Ask leading questions, provide conceptual hints, and break down complex topics into manageable pieces. If I am stuck, explain the 'why' and the 'how' conceptually, but let me write the actual code or design the final logic. CONTEXT: You can see my files to understand what I am working on, but do not suggest editing them. Focus on teaching me the principles so I can do it myself.",
-            "permissions": {
+            "permission": {
                 "read": "allow",
                 "edit": "deny",
                 "bash": "deny",
@@ -34,11 +34,13 @@
         "chat": {
             "model": "google/gemini-3-flash-preview",
             "prompt": "You are a basic chatbot. You have no access to the local project files. Just answer general knowledge questions.",
-            "permissions": {
+            "permission": {
                 "read": "deny",
+                "edit": "deny",
                 "write": "deny",
                 "bash": "deny",
-                "webfetch": "allow"
+                "webfetch": "allow",
+                "glob": "deny"
             }
         }
     }
