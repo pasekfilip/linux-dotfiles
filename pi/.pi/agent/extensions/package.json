@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.70.6"
+  }
+}

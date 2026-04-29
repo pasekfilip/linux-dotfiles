@@ -1,0 +1,32 @@
+{
+    "tui.editor.cursorUp": [
+        "up",
+        "ctrl+p"
+    ],
+    "tui.editor.cursorDown": [
+        "down",
+        "ctrl+n"
+    ],
+    "tui.select.up": [
+        "up",
+        "ctrl+p"
+    ],
+    "tui.select.down": [
+        "down",
+        "ctrl+n"
+    ],
+    "tui.select.pageUp": [
+        "pageUp",
+        "alt+p"
+    ],
+    "tui.select.pageDown": [
+        "pageDown",
+        "alt+n"
+    ],
+    "tui.editor.deleteWordBackward": [
+        "ctrl+w",
+        "alt+backspace"
+    ],
+    "app.model.cycleForward": [],
+    "app.model.cycleBackward": []
+}

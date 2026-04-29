@@ -1,0 +1,13 @@
+{
+  "lastChangelogVersion": "0.70.6",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-haiku-4-5",
+  "defaultThinkingLevel": "medium",
+  "theme": "dark",
+  "hideThinkingBlock": true,
+  "packages": [
+    "npm:pi-resource-center",
+    "git:github.com/sanathks/pi-tokyo-night-storm",
+    "npm:context-mode"
+  ]
+}
