@@ -3,7 +3,7 @@
   "defaultProvider": "anthropic",
   "defaultModel": "claude-haiku-4-5",
   "defaultThinkingLevel": "medium",
-  "theme": "dark",
+  "theme": "dark-opaque",
   "hideThinkingBlock": true,
   "packages": [
     "npm:pi-resource-center",
