@@ -8,6 +8,8 @@
   "packages": [
     "npm:pi-resource-center",
     "git:github.com/sanathks/pi-tokyo-night-storm",
-    "npm:context-mode"
-  ]
+    "npm:context-mode",
+    "npm:@ollama/pi-web-search"
+  ],
+  "theme": "dark-opaque"
 }
