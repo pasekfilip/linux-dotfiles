@@ -98,6 +98,16 @@ return {
 		-- Set your Java path
 		local java_exec = "/usr/lib/jvm/java-21-amazon-corretto/bin/java"
 
+		-- java-debug-adapter bundle (installed via Mason or auto-installed in debug.lua)
+		local debug_jar = vim.fn.glob(
+			vim.fn.stdpath("data") .. "/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
+			true
+		)
+		local bundles = {}
+		if debug_jar ~= "" then
+			table.insert(bundles, debug_jar)
+		end
+
 		-- Find the JAR file installed by Mason
 		local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
 		local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
@@ -109,6 +119,9 @@ return {
 		local workspace_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
 
 		vim.lsp.config("jdtls", {
+			init_options = {
+				bundles = bundles, -- enables vscode.java.startDebugSession command
+			},
 			cmd = {
 				java_exec,
 				"-javaagent:" .. jdtls_path .. "/lombok.jar",

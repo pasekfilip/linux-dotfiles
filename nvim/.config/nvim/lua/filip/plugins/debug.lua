@@ -23,6 +23,25 @@ return {
 			-- virt_text_pos = 'eol',              -- position of virtual text, see `:h nvim_buf_set_extmark()`
 		})
 
+		dap.adapters.java = function(callback)
+			vim.lsp.buf_request(0, "workspace/executeCommand", {
+				command = "vscode.java.startDebugSession",
+			}, function(err, port)
+				assert(not err, vim.inspect(err))
+				callback({ type = "server", host = "127.0.0.1", port = port })
+			end)
+		end
+
+		dap.configurations.java = {
+			{
+				type = "java",
+				request = "attach",
+				name = "Attach → Tomcat 9 (localhost:5005)",
+				hostName = "127.0.0.1",
+				port = 5005,
+			},
+		}
+
 		dap.adapters.codelldb = {
 			type = "server",
 			port = "${port}",
