@@ -5,6 +5,8 @@ source ~/.local/share/omarchy/default/bash/rc
 alias lsg='ls -lg'
 alias grep='rg'
 alias vi='nvim'
+alias o='ollama'
+alias pns='pi --no-session'
 fastfetch
 
 # Add your own exports, aliases, and functions here.
@@ -19,5 +21,5 @@ fastfetch
 # PS1="\W \[\e]0;\w\a\]$PS1"
 
 export NVM_DIR="$HOME/.config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
