@@ -8,6 +8,7 @@ end
 
 -- local current_theme = dofile("/home/filip/.config/omarchy/current/theme/wezterm_colors.lua")
 
+config.enable_kitty_keyboard = true
 config.enable_wayland = true
 config.front_end = "WebGpu"
 config.max_fps = 144
