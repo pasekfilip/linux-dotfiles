@@ -31,6 +31,34 @@
           "input": [
             "text"
           ]
+        },
+        {
+          "_launch": true,
+          "contextWindow": 131072,
+          "id": "deepseek-r1:14b",
+          "input": [
+            "text"
+          ],
+          "reasoning": true
+        },
+        {
+          "_launch": true,
+          "contextWindow": 262144,
+          "id": "qwen3.5:9b",
+          "input": [
+            "text",
+            "image"
+          ],
+          "reasoning": true
+        },
+        {
+          "_launch": true,
+          "contextWindow": 131072,
+          "id": "ds",
+          "input": [
+            "text"
+          ],
+          "reasoning": true
         }
       ]
     }
