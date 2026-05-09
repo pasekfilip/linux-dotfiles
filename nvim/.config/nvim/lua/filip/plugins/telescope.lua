@@ -78,6 +78,7 @@ return {
 		keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Find string in cwd" })
 		keymap.set("n", "<leader>fc", builtin.grep_string, { desc = "Find string under cursor in cwd" })
 		keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Get diagnostics" })
+		keymap.set("n", "<leader>fq", builtin.lsp_document_symbols, { desc = "Get document symbols" })
 		keymap.set("n", "<leader>fe", function()
 			builtin.diagnostics({ severity = "ERROR" })
 		end, { desc = "Workspace Errors" })
