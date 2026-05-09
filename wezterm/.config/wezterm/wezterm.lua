@@ -6,8 +6,9 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
--- local current_theme = dofile("/home/filip/.config/omarchy/current/theme/wezterm_colors.lua")
+local current_theme = dofile("/home/filip/.config/omarchy/current/theme/wezterm_colors.lua")
 
+print(current_theme)
 config.enable_kitty_keyboard = true
 config.enable_wayland = true
 config.front_end = "WebGpu"
@@ -15,22 +16,24 @@ config.max_fps = 144
 config.term = "xterm-256color"
 config.default_cursor_style = "SteadyBlock"
 config.window_background_opacity = 0.98
-config.color_scheme = "nord"
+config.color_scheme = current_theme
+-- config.color_scheme = 'Tokyo Night'
 config.font = wezterm.font("CaskaydiaMono Nerd Font")
 config.font_size = 18
 config.window_padding = {
-	left = 14,
-	right = 14,
-	top = 14,
+	left = 8,
+	right = 8,
+	top = 8,
 	bottom = 0,
 }
 
 config.adjust_window_size_when_changing_font_size = false
 config.disable_default_key_bindings = true
 
--- tab bar
+--tab
 config.hide_tab_bar_if_only_one_tab = false
-config.tab_bar_at_bottom = true
+config.show_new_tab_button_in_tab_bar = false
+config.tab_bar_at_bottom = false
 config.use_fancy_tab_bar = false
 config.tab_and_split_indices_are_zero_based = true
 
@@ -47,8 +50,19 @@ wezterm.on("window-opacity-change", function(window)
 end)
 
 resurrect.state_manager.periodic_save()
+local act = wezterm.action
 
 config.keys = {
+	{
+		key = "r",
+		mods = "SUPER",
+		action = act.PromptInputLine({
+			description = "Enter new name for tab.",
+			action = wezterm.action_callback(function(window, pane, line)
+				window:active_tab():set_title(line)
+			end),
+		}),
+	},
 	{
 		key = "b",
 		mods = "SHIFT | CTRL",
@@ -57,32 +71,32 @@ config.keys = {
 			resurrect.window_state.save_window_action()
 		end),
 	},
-	{
-		key = "r",
-		mods = "SHIFT | CTRL",
-		action = wezterm.action_callback(function(win, pane)
-			resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, label)
-				local type = string.match(id, "^([^/]+)") -- match before '/'
-				id = string.match(id, "([^/]+)$") -- match after '/'
-				id = string.match(id, "(.+)%..+$") -- remove file extention
-				local opts = {
-					relative = true,
-					restore_text = true,
-					on_pane_restore = resurrect.tab_state.default_on_pane_restore,
-				}
-				if type == "workspace" then
-					local state = resurrect.state_manager.load_state(id, "workspace")
-					resurrect.workspace_state.restore_workspace(state, opts)
-				elseif type == "window" then
-					local state = resurrect.state_manager.load_state(id, "window")
-					resurrect.window_state.restore_window(pane:window(), state, opts)
-				elseif type == "tab" then
-					local state = resurrect.state_manager.load_state(id, "tab")
-					resurrect.tab_state.restore_tab(pane:tab(), state, opts)
-				end
-			end)
-		end),
-	},
+	-- {
+	-- 	key = "r",
+	-- 	mods = "SHIFT | CTRL",
+	-- 	action = wezterm.action_callback(function(win, pane)
+	-- 		resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, label)
+	-- 			local type = string.match(id, "^([^/]+)") -- match before '/'
+	-- 			id = string.match(id, "([^/]+)$") -- match after '/'
+	-- 			id = string.match(id, "(.+)%..+$") -- remove file extention
+	-- 			local opts = {
+	-- 				relative = true,
+	-- 				restore_text = true,
+	-- 				on_pane_restore = resurrect.tab_state.default_on_pane_restore,
+	-- 			}
+	-- 			if type == "workspace" then
+	-- 				local state = resurrect.state_manager.load_state(id, "workspace")
+	-- 				resurrect.workspace_state.restore_workspace(state, opts)
+	-- 			elseif type == "window" then
+	-- 				local state = resurrect.state_manager.load_state(id, "window")
+	-- 				resurrect.window_state.restore_window(pane:window(), state, opts)
+	-- 			elseif type == "tab" then
+	-- 				local state = resurrect.state_manager.load_state(id, "tab")
+	-- 				resurrect.tab_state.restore_tab(pane:tab(), state, opts)
+	-- 			end
+	-- 		end)
+	-- 	end),
+	-- },
 	{
 		key = "f",
 		mods = "SHIFT|CTRL",
