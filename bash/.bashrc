@@ -7,6 +7,7 @@ alias grep='rg'
 alias vi='nvim'
 alias o='ollama'
 alias pns='pi --no-session'
+alias orun='ollama run qwen3.5:9b-q8_0'
 fastfetch
 
 # Add your own exports, aliases, and functions here.
