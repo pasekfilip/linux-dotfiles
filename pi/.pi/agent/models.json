@@ -3,27 +3,8 @@
     "ollama": {
       "api": "openai-completions",
       "apiKey": "ollama",
-      "baseUrl": "http://localhost:11434/v1",
-      "compat": {
-        "supportsDeveloperRole": false,
-        "supportsReasoningEffort": false
-      },
+      "baseUrl": "http://127.0.0.1:11434/v1",
       "models": [
-        {
-          "contextWindow": 131072,
-          "cost": {
-            "cacheRead": 0,
-            "cacheWrite": 0,
-            "input": 0,
-            "output": 0
-          },
-          "id": "llama3.1:latest",
-          "input": [
-            "text"
-          ],
-          "maxTokens": 8192,
-          "name": "Llama 3.1 8B (Local)"
-        },
         {
           "_launch": true,
           "contextWindow": 131072,
@@ -34,10 +15,11 @@
         },
         {
           "_launch": true,
-          "contextWindow": 131072,
-          "id": "deepseek-r1:14b",
+          "contextWindow": 262144,
+          "id": "qwen3.5:9b-q8_0",
           "input": [
-            "text"
+            "text",
+            "image"
           ],
           "reasoning": true
         },
@@ -48,15 +30,6 @@
           "input": [
             "text",
             "image"
-          ],
-          "reasoning": true
-        },
-        {
-          "_launch": true,
-          "contextWindow": 131072,
-          "id": "ds",
-          "input": [
-            "text"
           ],
           "reasoning": true
         }
