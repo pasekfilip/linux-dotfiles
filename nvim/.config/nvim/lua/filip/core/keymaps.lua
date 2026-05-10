@@ -1,6 +1,7 @@
 vim.g.mapleader = " "
 local set = vim.keymap.set
 local del = vim.keymap.del
+local api = vim.api
 
 set("n", "<C-s>", ":w<CR>", { desc = "Save file", noremap = true, silent = true })
 set("i", "<C-s>", "<cmd>:w<CR>", { desc = "Save file", noremap = true, silent = true })
@@ -38,6 +39,43 @@ set("x", "<", "<gv")
 
 set("x", "<leader>p", '"_dP', { desc = "When pasting over selected it sends it to the void register" })
 
+set("n", "<leader>i", function()
+	local buf = vim.fn.bufadd("/home/filip/Notes/tasks.md")
+	vim.fn.bufload(buf)
+
+	local height = 20
+	local width = 70
+	local centeredHeight = math.floor((vim.o.lines - height) / 2)
+	local centeredWidth = math.floor((vim.o.columns - width) / 2)
+
+	api.nvim_set_option_value("buflisted", true, { buf = buf })
+
+	local win = api.nvim_open_win(buf, true, {
+		relative = "editor",
+		row = centeredHeight,
+		col = centeredWidth,
+		height = height,
+		width = width,
+		border = "single",
+	})
+
+	set("n", "<esc>", function()
+		api.nvim_win_close(win, false)
+	end, { buf = 0, noremap = true, silent = true })
+
+	set("n", "<leader>i", function()
+		api.nvim_win_close(win, false)
+	end, { buf = 0, noremap = true, silent = true })
+
+	api.nvim_create_autocmd("BufLeave", {
+		buf = buf,
+		callback = function()
+			api.nvim_win_close(win, false)
+		end,
+		once = true,
+	})
+end)
+
 -- Copy Full File-Path
 set("n", "<leader>yp", function()
 	local path = vim.fn.expand("%:p")
@@ -61,13 +99,13 @@ set("n", "<leader>jb", function()
 		)
 		print("Running Linux Java build & deploy...")
 
-		local main_win = vim.api.nvim_get_current_win()
+		local main_win = api.nvim_get_current_win()
 
 		-- 1. Create the split
 		vim.cmd("botright 10split")
-		local term_win = vim.api.nvim_get_current_win()
-		local term_buf = vim.api.nvim_create_buf(false, true)
-		vim.api.nvim_win_set_buf(term_win, term_buf)
+		local term_win = api.nvim_get_current_win()
+		local term_buf = api.nvim_create_buf(false, true)
+		api.nvim_win_set_buf(term_win, term_buf)
 
 		-- 2. Run the job inside the terminal buffer
 		vim.fn.jobstart(build_cmd, {
@@ -75,8 +113,8 @@ set("n", "<leader>jb", function()
 			on_exit = function(_, exit_code)
 				if exit_code == 0 then
 					-- SUCCESS: Close the terminal window automatically
-					if vim.api.nvim_win_is_valid(term_win) then
-						vim.api.nvim_win_close(term_win, true)
+					if api.nvim_win_is_valid(term_win) then
+						api.nvim_win_close(term_win, true)
 					end
 					vim.notify("🚀 Build & Deploy Successful!", vim.log.levels.INFO)
 				else
@@ -88,9 +126,9 @@ set("n", "<leader>jb", function()
 
 		-- 3. FOLLOW THE PRINT (Auto-scroll)
 		-- To auto-scroll, the cursor must be on the last line of the terminal
-		vim.api.nvim_win_set_cursor(term_win, { vim.api.nvim_buf_line_count(term_buf), 0 })
+		api.nvim_win_set_cursor(term_win, { vim.api.nvim_buf_line_count(term_buf), 0 })
 		-- -- 4. Jump back to your code
-		-- vim.api.nvim_set_current_win(main_win)
+		-- api.nvim_set_current_win(main_win)
 	end
 
 	-- --- C++ BUILD AND RUN ---
@@ -120,7 +158,7 @@ end, { noremap = true, silent = false }) -- Set silent=false to see the print me
 -- 	end
 -- end, { noremap = true, silent = true })
 
-vim.api.nvim_create_autocmd("FileType", {
+api.nvim_create_autocmd("FileType", {
 	pattern = { "sql", "mysql", "pgsql", "plsql" },
 	callback = function()
 		vim.bo.commentstring = "-- %s"
@@ -128,7 +166,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
+api.nvim_create_autocmd("FileType", {
 	pattern = "lua",
 	callback = function()
 		set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line", buffer = true, silent = true })
