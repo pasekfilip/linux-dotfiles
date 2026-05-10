@@ -41,6 +41,7 @@ opt.conceallevel = 0 -- Don't hide markup
 opt.concealcursor = "" -- Don't hide cursor line markup
 opt.synmaxcol = 300 -- Syntax highlighting limit
 opt.more = true -- When message dosent fit on the screen it shows -- more --
+opt.winborder = "single"
 
 -- File handling
 opt.backup = false -- Don't create backup files
