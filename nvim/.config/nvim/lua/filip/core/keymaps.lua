@@ -40,7 +40,7 @@ set("x", "<", "<gv")
 set("x", "<leader>p", '"_dP', { desc = "When pasting over selected it sends it to the void register" })
 
 set("n", "<leader>i", function()
-	local buf = vim.fn.bufadd("/home/filip/Notes/tasks.md")
+	local buf = vim.fn.bufadd("/home/filip/notes/tasks.md")
 	vim.fn.bufload(buf)
 
 	local height = 20
@@ -70,6 +70,7 @@ set("n", "<leader>i", function()
 	api.nvim_create_autocmd("BufLeave", {
 		buf = buf,
 		callback = function()
+			-- vim.cmd("! git log")
 			api.nvim_win_close(win, false)
 		end,
 		once = true,
