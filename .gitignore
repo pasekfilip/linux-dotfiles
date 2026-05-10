@@ -1,3 +1,5 @@
 /hypr/.config/hypr/monitors.conf
 /pi/.pi/agent/sessions
 /pi/.pi/agent/auth.json
+/pi/.pi/agent/extensions/node_modules
+/pi/.pi/context-mode/sessions
