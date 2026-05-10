@@ -1,39 +1,56 @@
 {
-  "providers": {
-    "ollama": {
-      "api": "openai-completions",
-      "apiKey": "ollama",
-      "baseUrl": "http://127.0.0.1:11434/v1",
-      "models": [
-        {
-          "_launch": true,
-          "contextWindow": 131072,
-          "id": "llama3.1",
-          "input": [
-            "text"
-          ]
-        },
-        {
-          "_launch": true,
-          "contextWindow": 262144,
-          "id": "qwen3.5:9b-q8_0",
-          "input": [
-            "text",
-            "image"
-          ],
-          "reasoning": true
-        },
-        {
-          "_launch": true,
-          "contextWindow": 262144,
-          "id": "qwen3.5:9b",
-          "input": [
-            "text",
-            "image"
-          ],
-          "reasoning": true
+    "providers": {
+        "ollama": {
+            "api": "openai-completions",
+            "apiKey": "ollama",
+            "baseUrl": "http://127.0.0.1:11434/v1",
+            "models": [
+                {
+                    "_launch": true,
+                    "contextWindow": 131072,
+                    "id": "llama3.1",
+                    "input": [
+                        "text"
+                    ]
+                },
+                {
+                    "_launch": true,
+                    "contextWindow": 262144,
+                    "id": "qwen3.5:9b-q8_0",
+                    "input": [
+                        "text",
+                        "image"
+                    ],
+                    "reasoning": true
+                },
+                {
+                    "_launch": true,
+                    "contextWindow": 262144,
+                    "id": "batiai/qwen3.6-35b:iq3",
+                    "input": [
+                        "text"
+                    ],
+                    "reasoning": true
+                },
+                {
+                    "_launch": true,
+                    "contextWindow": 262144,
+                    "id": "qwen-35b-16k",
+                    "input": [
+                        "text"
+                    ],
+                    "reasoning": true
+                },
+                {
+                    "_launch": true,
+                    "contextWindow": 8192,
+                    "id": "qwen-35b-small",
+                    "input": [
+                        "text"
+                    ],
+                    "reasoning": true
+                }
+            ]
         }
-      ]
     }
-  }
 }
