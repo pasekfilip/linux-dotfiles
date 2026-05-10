@@ -61,7 +61,7 @@ return {
 				keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
 
 				opts.desc = "Show signature help"
-				keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts) -- show documentation for what is under cursor
+				keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts) -- show documentation for what is under cursor
 
 				-- opts.desc = "Restart LSP"
 				-- keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
@@ -100,7 +100,8 @@ return {
 
 		-- java-debug-adapter bundle (installed via Mason or auto-installed in debug.lua)
 		local debug_jar = vim.fn.glob(
-			vim.fn.stdpath("data") .. "/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
+			vim.fn.stdpath("data")
+				.. "/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
 			true
 		)
 		local bundles = {}
