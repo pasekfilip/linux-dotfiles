@@ -14,7 +14,7 @@ return {
 			"                   私        私             ",
 			"                  私          私            ",
 			"                 私私私私私私私私           ",
-			"                謙虚な人を目指したい        ",
+			"               謙虚な人を目指したい         ",
 		}
 
 		dashboard.section.buttons.val = {
