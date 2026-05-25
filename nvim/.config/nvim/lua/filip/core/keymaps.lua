@@ -93,7 +93,7 @@ set("n", "<leader>jb", function()
 		local dest_war_path = tomcat_webapps_dir .. "api.war"
 
 		local build_cmd = string.format(
-			[[mvn clean package -DskipTests && rm -f %s && cp %s %s]],
+			[[mvn clean package -DskipTests && sg tomcat9 -c "rm -f %s && cp %s %s"]],
 			dest_war_path,
 			source_war_path,
 			dest_war_path
