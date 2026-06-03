@@ -40,41 +40,7 @@ set("x", "<", "<gv")
 set("x", "<leader>p", '"_dP', { desc = "When pasting over selected it sends it to the void register" })
 
 set("n", "<leader>i", function()
-	local buf = vim.fn.bufadd("/home/filip/notes/tasks.md")
-	vim.fn.bufload(buf)
-
-	local height = 20
-	local width = 70
-	local centeredHeight = math.floor((vim.o.lines - height) / 2)
-	local centeredWidth = math.floor((vim.o.columns - width) / 2)
-
-	api.nvim_set_option_value("buflisted", true, { buf = buf })
-
-	local win = api.nvim_open_win(buf, true, {
-		relative = "editor",
-		row = centeredHeight,
-		col = centeredWidth,
-		height = height,
-		width = width,
-		border = "single",
-	})
-
-	set("n", "<esc>", function()
-		api.nvim_win_close(win, false)
-	end, { buf = 0, noremap = true, silent = true })
-
-	set("n", "<leader>i", function()
-		api.nvim_win_close(win, false)
-	end, { buf = 0, noremap = true, silent = true })
-
-	api.nvim_create_autocmd("BufLeave", {
-		buf = buf,
-		callback = function()
-			-- vim.cmd("! git log")
-			api.nvim_win_close(win, false)
-		end,
-		once = true,
-	})
+	require("filip.task").toggle()
 end)
 
 -- Copy Full File-Path
