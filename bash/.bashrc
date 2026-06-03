@@ -7,7 +7,7 @@ alias grep='rg'
 alias vi='nvim'
 alias o='ollama'
 alias pns='pi --no-session'
-alias pchat='pi --system-prompt " " -nt -ne -ns --skill /home/filip/.pi/agent/skills/'
+alias pchat='pi --system-prompt " " -ne -ns --tools read,grep,find,ls --skill /home/filip/.pi/agent/skills/'
 alias orun='ollama run qwen3.5:9b-q8_0'
 fastfetch
 
@@ -25,3 +25,7 @@ fastfetch
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/filip/.lmstudio/bin"
+# End of LM Studio CLI section
