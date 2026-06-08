@@ -7,8 +7,8 @@ alias grep='rg'
 alias vi='nvim'
 alias o='ollama'
 alias pns='pi --no-session'
-alias pread='pi --system-prompt " " -ne -ns --tools read,grep,find,ls --skill /home/filip/.pi/agent/skills/'
-alias pchat='pi --system-prompt " " -ne -ns -nt --skill /home/filip/.pi/agent/skills/'
+alias pro='pi --tools read,grep,find,ls,web_fetch,web_search'
+alias pchat='pi --system-prompt " " --tools web_search,web_fetch'
 alias orun='ollama run qwen3.5:9b-q8_0'
 fastfetch
 
