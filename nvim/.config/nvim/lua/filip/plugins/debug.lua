@@ -85,7 +85,10 @@ return {
 
 		local set = vim.keymap.set
 		set("n", "<F4>", dap.continue, { desc = "Debug: Start/Continue" })
-		set("n", "<F7>", dap.terminate, { desc = "Debug: Terminate" })
+		set("n", "<F7>", function()
+			dap.terminate()
+			dapui.close()
+		end, { desc = "Debug: Terminate" })
 		set("n", "<F8>", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
 		set("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
 		set("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
