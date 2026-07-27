@@ -15,6 +15,7 @@ return {
             "angularls",
             "jdtls",
             "ts_ls",
+            "ols",
         }
     },
     dependencies = {

@@ -47,5 +47,24 @@ return {
 		},
 		global_keymaps_prefix = "<leader>i",
 		kulala_keymaps_prefix = "",
+		-- Kulala's default in-window keymaps bind <C-h>/<C-l> to prev/next tab,
+		-- which shadows vim-tmux-navigator's window navigation inside the kulala
+		-- view. Move tab switching to <S-Tab>/<Tab> so <C-h>/<C-l> stay free.
+		kulala_keymaps = {
+			["Previous tab"] = {
+				"<S-Tab>",
+				function()
+					require("kulala.ui").show_previous_tab()
+				end,
+				mode = { "n" },
+			},
+			["Next tab"] = {
+				"<Tab>",
+				function()
+					require("kulala.ui").show_next_tab()
+				end,
+				mode = { "n" },
+			},
+		},
 	},
 }

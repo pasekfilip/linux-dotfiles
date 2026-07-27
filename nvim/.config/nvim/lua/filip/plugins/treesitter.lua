@@ -55,6 +55,7 @@ return {
 			"cpp",
 			"python",
 			"java",
+			"odin",
 		}
 
 		local alreadyInstalled = require("nvim-treesitter.config").get_installed()
