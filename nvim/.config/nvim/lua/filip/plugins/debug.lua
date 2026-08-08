@@ -83,6 +83,26 @@ return {
 			},
 		}
 
+		dap.configurations.odin = {
+			{
+				name = "Launch file",
+				type = "codelldb",
+				request = "launch",
+				program = function()
+					local result = vim.fn.system("odin build . -debug -out:render_buzz")
+
+					if vim.v.shell_error ~= 0 then
+						vim.notify("Compilation failed:\n" .. result)
+						return nil
+					end
+
+					return vim.fn.getcwd() .. "/render_buzz"
+				end,
+				cwd = "${workspaceFolder}",
+				stopOnEntry = false,
+			},
+		}
+
 		local set = vim.keymap.set
 		set("n", "<F4>", dap.continue, { desc = "Debug: Start/Continue" })
 		set("n", "<F7>", function()
