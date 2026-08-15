@@ -47,6 +47,11 @@ return {
 
 		dapview.setup({
 			auto_toggle = true, -- open on launch/attach, close when the session ends
+			winbar = {
+				-- Adding "console" merges the terminal into the main window instead
+				-- of giving it its own split
+				sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
+			},
 			virtual_text = {
 				enabled = true,
 				position = "eol",
