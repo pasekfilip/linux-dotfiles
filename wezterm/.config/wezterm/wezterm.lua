@@ -230,13 +230,16 @@ for i, v in ipairs(current_layout_number_row) do
 end
 
 -- Unified split/pane navigation with nvim.
--- ALT is owned by Hyprland, so resize uses CTRL|SHIFT instead of the upstream default META.
+-- ALT is owned by Hyprland, so the physical resize key is CTRL|SHIFT, not the upstream META.
 smart_splits.apply_to_config(config, {
 	default_amount = 5,
 	direction_keys = { "h", "j", "k", "l" },
 	modifiers = {
 		move = "CTRL",
-		resize = "CTRL|SHIFT",
+		-- You press CTRL+SHIFT+hjkl, but it reaches nvim as META+hjkl: in legacy terminal
+		-- encoding CTRL+SHIFT+h is byte-identical to CTRL+h, while META+h is an
+		-- unambiguous ESC h. Hyprland never sees this synthetic key, only wezterm sends it.
+		resize = { wezterm = "CTRL|SHIFT", neovim = "META" },
 	},
 })
 

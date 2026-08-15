@@ -27,7 +27,7 @@ return {
 
 		completion = {
 			menu = {
-				auto_show = false,
+				auto_show = true,
 			},
 
 			-- ADDED: Border for the main completion menu

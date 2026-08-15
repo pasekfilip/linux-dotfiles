@@ -14,7 +14,13 @@ return {
 		{ "<C-k>", function() require("smart-splits").move_cursor_up() end, desc = "Move to split/pane up" },
 		{ "<C-l>", function() require("smart-splits").move_cursor_right() end, desc = "Move to split/pane right" },
 
-		-- resize nvim splits and wezterm panes with the same keys
+		-- resize nvim splits and wezterm panes with the same keys.
+		-- <M-*> is what wezterm forwards when you press CTRL+SHIFT+hjkl (see wezterm.lua),
+		-- <C-S-*> is the direct key for terminals that speak the kitty keyboard protocol.
+		{ "<M-h>", function() require("smart-splits").resize_left() end, desc = "Resize split/pane left" },
+		{ "<M-j>", function() require("smart-splits").resize_down() end, desc = "Resize split/pane down" },
+		{ "<M-k>", function() require("smart-splits").resize_up() end, desc = "Resize split/pane up" },
+		{ "<M-l>", function() require("smart-splits").resize_right() end, desc = "Resize split/pane right" },
 		{ "<C-S-h>", function() require("smart-splits").resize_left() end, desc = "Resize split/pane left" },
 		{ "<C-S-j>", function() require("smart-splits").resize_down() end, desc = "Resize split/pane down" },
 		{ "<C-S-k>", function() require("smart-splits").resize_up() end, desc = "Resize split/pane up" },
