@@ -26,6 +26,18 @@ return {
 			desc = "Debug: Toggle Breakpoint",
 		},
 		{
+			"<leader>dh",
+			function() require("dap-view").hover() end,
+			mode = { "n", "v" },
+			desc = "Debug: Hover Value",
+		},
+		{
+			"<leader>dw",
+			function() require("dap-view").add_expr() end,
+			mode = { "n", "v" },
+			desc = "Debug: Watch Expression",
+		},
+		{
 			"<leader>do",
 			function() require("dap").step_over() end,
 			desc = "Debug: Step Over",
