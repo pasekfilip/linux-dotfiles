@@ -6,7 +6,7 @@ return {
 	},
 	keys = {
 		{
-			"<leader>dc",
+			"<F4>",
 			function() require("dap").continue() end,
 			desc = "Debug: Start/Continue",
 		},
@@ -21,7 +21,7 @@ return {
 			desc = "Debug: Toggle View",
 		},
 		{
-			"<leader>db",
+			"<F5>",
 			function() require("dap").toggle_breakpoint() end,
 			desc = "Debug: Toggle Breakpoint",
 		},
@@ -38,17 +38,17 @@ return {
 			desc = "Debug: Watch Expression",
 		},
 		{
-			"<leader>do",
+			"<F10>",
 			function() require("dap").step_over() end,
 			desc = "Debug: Step Over",
 		},
 		{
-			"<leader>di",
+			"<F11>",
 			function() require("dap").step_into() end,
 			desc = "Debug: Step Into",
 		},
 		{
-			"<leader>dO",
+			"<S-F11>",
 			function() require("dap").step_out() end,
 			desc = "Debug: Step Out",
 		},
