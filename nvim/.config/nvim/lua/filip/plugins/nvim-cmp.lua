@@ -26,6 +26,10 @@ return {
 		},
 
 		completion = {
+			menu = {
+				auto_show = false,
+			},
+
 			-- ADDED: Border for the main completion menu
 			-- UPDATED: Added window.border to documentation
 			documentation = {
