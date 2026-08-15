@@ -1,4 +1,4 @@
 return {
   "nvim-lua/plenary.nvim", -- lua functions that many plugins use
-  "christoomey/vim-tmux-navigator", -- tmux & split window navigation
+  -- split/pane navigation lives in smart-splits.lua (replaced vim-tmux-navigator)
 }

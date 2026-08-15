@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
 local resurrect = wezterm.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
+local smart_splits = wezterm.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
 local config = {}
 
 if wezterm.config_builder then
@@ -195,46 +196,8 @@ config.keys = {
 		key = "-",
 		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "h",
-		action = wezterm.action.ActivatePaneDirection("Left"),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "j",
-		action = wezterm.action.ActivatePaneDirection("Down"),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "k",
-		action = wezterm.action.ActivatePaneDirection("Up"),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "l",
-		action = wezterm.action.ActivatePaneDirection("Right"),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "LeftArrow",
-		action = wezterm.action.AdjustPaneSize({ "Left", 5 }),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "RightArrow",
-		action = wezterm.action.AdjustPaneSize({ "Right", 5 }),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "DownArrow",
-		action = wezterm.action.AdjustPaneSize({ "Down", 5 }),
-	},
-	{
-		mods = "CTRL | SHIFT",
-		key = "UpArrow",
-		action = wezterm.action.AdjustPaneSize({ "Up", 5 }),
-	},
+	-- CTRL+hjkl (move) and CTRL+SHIFT+hjkl (resize) are added by smart-splits below;
+	-- they act on wezterm panes, or are forwarded to nvim when nvim has the focus.
 	{
 		mods = "CTRL",
 		key = "=",
@@ -265,6 +228,17 @@ for i, v in ipairs(current_layout_number_row) do
 		action = wezterm.action.ActivateTab(i - 1),
 	})
 end
+
+-- Unified split/pane navigation with nvim.
+-- ALT is owned by Hyprland, so resize uses CTRL|SHIFT instead of the upstream default META.
+smart_splits.apply_to_config(config, {
+	default_amount = 5,
+	direction_keys = { "h", "j", "k", "l" },
+	modifiers = {
+		move = "CTRL",
+		resize = "CTRL|SHIFT",
+	},
+})
 
 -- --tmux restore
 -- wezterm.on("save-indicator", function(window, _)

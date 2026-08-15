@@ -16,10 +16,7 @@ set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 set("n", "<leader>sq", "<cmd>close<CR>", { desc = "Close current split" })
 set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search with esc" })
 
-set("n", "<C-Left>", "<cmd>vertical resize -5<CR>", { desc = "Make the window smaller by 5 columns" })
-set("n", "<C-Right>", "<cmd>vertical resize +5<CR>", { desc = "Make the window bigger by 5 columns" })
-set("n", "<C-up>", "<cmd>resize +5<CR>", { noremap = true, silent = true })
-set("n", "<C-down>", "<cmd>resize -5<CR>", { noremap = true, silent = true })
+-- <C-arrows> resize splits and wezterm panes, see plugins/smart-splits.lua
 
 set("n", "<C-a>", "ggVG", { desc = "select all everything inside current file" })
 
