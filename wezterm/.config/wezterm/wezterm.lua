@@ -7,9 +7,10 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
-local current_theme = dofile("/home/filip/.config/omarchy/current/theme/wezterm_colors.lua")
+-- Colors come from the active Omarchy theme's colors.toml; see omarchy.lua.
+local omarchy = require("omarchy")
+omarchy.watch()
 
-print(current_theme)
 config.enable_kitty_keyboard = true
 config.enable_wayland = true
 config.front_end = "WebGpu"
@@ -17,8 +18,7 @@ config.max_fps = 144
 config.term = "xterm-256color"
 config.default_cursor_style = "SteadyBlock"
 config.window_background_opacity = 0.98
-config.color_scheme = current_theme
--- config.color_scheme = 'Tokyo Night'
+config.colors = omarchy.colors()
 config.font = wezterm.font("CaskaydiaMono Nerd Font")
 config.font_size = 18
 config.window_padding = {

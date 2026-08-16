@@ -1,15 +1,13 @@
+-- Colorschemes for the Omarchy themes. Nothing here sets the colorscheme:
+-- filip/omarchy.lua reads the active Omarchy theme and loads exactly one of
+-- these. They are all lazy so the other ones cost nothing at startup.
+--
+-- Adding a theme: add the plugin here and a row to M.MAP in filip/omarchy.lua.
+
 return {
 	{
-		"shaunsingh/nord.nvim",
-		enabled = false,
-		priority = 1000,
-		config = function()
-			vim.cmd([[colorscheme tokyonight]])
-		end,
-	},
-	{
 		"folke/tokyonight.nvim",
-		enabled = true,
+		lazy = true,
 		priority = 1000,
 		config = function()
 			local bg = "#011628"
@@ -59,24 +57,46 @@ return {
 					hl.DiffFiller = { fg = c.bg_dark, bg = c.bg_dark }
 				end,
 			})
-
-			-- load the colorscheme here
-			vim.cmd([[colorscheme tokyonight]])
 		end,
 	},
+
 	{
 		"rose-pine/neovim",
-		enabled = false,
 		name = "rose-pine",
+		lazy = true,
 		priority = 1000,
 		config = function()
 			require("rose-pine").setup({
 				-- disable_background = true,
 			})
-			vim.cmd("colorscheme rose-pine")
 			-- Highlight Tree-sitter types differently
 			-- vim.api.nvim_set_hl(0, "@lsp.type.class", { fg = "#569CD6" })
 			vim.api.nvim_set_hl(0, "@lsp.type.enum", { fg = "#D19A66" })
 		end,
 	},
+
+	{
+		-- Omarchy's ristretto is monokai-pro's ristretto filter, which only
+		-- applies through setup(), not by picking a colorscheme name.
+		"gthelding/monokai-pro.nvim",
+		lazy = true,
+		priority = 1000,
+		opts = { filter = "ristretto" },
+	},
+
+	{ "catppuccin/nvim", name = "catppuccin", lazy = true, priority = 1000 },
+	{ "EdenEast/nightfox.nvim", lazy = true, priority = 1000 }, -- nord -> nordfox
+	{ "rebelot/kanagawa.nvim", lazy = true, priority = 1000 },
+	{ "ellisonleao/gruvbox.nvim", lazy = true, priority = 1000 },
+	{ "neanias/everforest-nvim", lazy = true, priority = 1000 },
+	{ "tahayvr/matteblack.nvim", lazy = true, priority = 1000 },
+	{ "bjarneo/vantablack.nvim", lazy = true, priority = 1000 },
+	{ "bjarneo/ethereal.nvim", lazy = true, priority = 1000 },
+	{ "bjarneo/white.nvim", lazy = true, priority = 1000 },
+	{ "bjarneo/hackerman.nvim", dependencies = { "bjarneo/aether.nvim" }, lazy = true, priority = 1000 },
+	{ "kepano/flexoki-neovim", lazy = true, priority = 1000 },
+	{ "omacom-io/lumon.nvim", lazy = true, priority = 1000 },
+	{ "OldJobobo/miasma.nvim", lazy = true, priority = 1000 },
+	{ "OldJobobo/retro-82.nvim", lazy = true, priority = 1000 },
+	{ "ribru17/bamboo.nvim", lazy = true, priority = 1000 }, -- osaka-jade
 }
