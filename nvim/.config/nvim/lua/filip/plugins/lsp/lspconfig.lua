@@ -46,12 +46,12 @@ return {
 
 				opts.desc = "Go to previous diagnostic"
 				keymap.set("n", "[d", function()
-					vim.diagnostic.jump({ count = -1, float = true })
+					vim.diagnostic.jump({ count = -1 })
 				end, opts)
 
 				opts.desc = "Go to next diagnostic"
 				keymap.set("n", "]d", function()
-					vim.diagnostic.jump({ count = 1, float = true })
+					vim.diagnostic.jump({ count = 1 })
 				end, opts)
 
 				opts.desc = "Show documentation for what is under cursor"
@@ -77,8 +77,8 @@ return {
 
 		vim.diagnostic.config({
 			underline = true,
-			virtual_text = { current_line = true },
-			virtual_lines = false,
+			virtual_text = false,
+			virtual_lines = { current_line = true },
 			signs = {
 				text = {
 					[vim.diagnostic.severity.ERROR] = "",
@@ -93,7 +93,7 @@ return {
 		})
 
 		-- Set your Java path
-		local java_exec = "/usr/lib/jvm/java-21-amazon-corretto/bin/java"
+		local java_exec = "/usr/lib/jvm/default-runtime/bin/java"
 
 		-- java-debug-adapter bundle (installed via Mason or auto-installed in debug.lua)
 		local debug_jar = vim.fn.glob(
@@ -110,42 +110,73 @@ return {
 		local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
 		local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
 		local config_dir = jdtls_path .. "/config_linux" -- use config_linux / config_mac if needed
-		-- local root_dir = lspconfig.util.root_pattern(unpack(root_files))(vim.fn.getcwd())
-		local root_dir = require("lspconfig.util").root_pattern("pom.xml", ".git", "build.gradle")(vim.fn.getcwd())
-			or vim.fn.getcwd()
 
-		local workspace_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
+		local function java_root(fname)
+			-- Prefer the repository / build root for multi-module projects so JDTLS
+			-- imports sibling modules into the same workspace. Falling back directly to
+			-- pom.xml/build.gradle would often start JDTLS inside just one submodule.
+			local multi_module_root = vim.fs.root(fname, {
+				"mvnw",
+				"gradlew",
+				"settings.gradle",
+				"settings.gradle.kts",
+				".git",
+			})
+			local single_module_root = vim.fs.root(fname, {
+				"pom.xml",
+				"build.gradle",
+				"build.gradle.kts",
+				"build.xml",
+			})
+
+			return multi_module_root or single_module_root or vim.fn.getcwd()
+		end
 
 		vim.lsp.config("jdtls", {
 			init_options = {
 				bundles = bundles, -- enables vscode.java.startDebugSession command
 			},
-			cmd = {
-				java_exec,
-				"-javaagent:" .. jdtls_path .. "/lombok.jar",
-				"-Declipse.application=org.eclipse.jdt.ls.core.id1",
-				"-Dosgi.bundles.defaultStartLevel=4",
-				"-Declipse.product=org.eclipse.jdt.ls.core.product",
-				"-Dlog.protocol=true",
-				"-Dlog.level=ALL",
-				"-Xmx4g",
-				"-XX:+UseG1GC",
-				"-XX:+UseStringDeduplication",
-				"--add-modules=ALL-SYSTEM",
-				"--add-opens",
-				"java.base/java.util=ALL-UNNAMED",
-				"--add-opens",
-				"java.base/java.lang=ALL-UNNAMED",
-				"-jar",
-				launcher_jar,
-				"-configuration",
-				config_dir,
-				"-data",
-				workspace_dir,
-			},
-			root_dir = root_dir,
+			-- In Nvim 0.12, a function-valued `cmd` must start and return the RPC client.
+			-- Returning only the argv table makes client.rpc a plain table, which causes
+			-- `attempt to call field 'request' (a nil value)` during initialize.
+			cmd = function(dispatchers, config)
+				local root = config.root_dir or java_root(0)
+				local ws_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. vim.fn.fnamemodify(root, ":p:t")
+
+				local cmd = {
+					java_exec,
+					"-javaagent:" .. jdtls_path .. "/lombok.jar",
+					"-Declipse.application=org.eclipse.jdt.ls.core.id1",
+					"-Dosgi.bundles.defaultStartLevel=4",
+					"-Declipse.product=org.eclipse.jdt.ls.core.product",
+					"-Dlog.protocol=true",
+					"-Dlog.level=ALL",
+					"-Xmx4g",
+					"-XX:+UseG1GC",
+					"-XX:+UseStringDeduplication",
+					"--add-modules=ALL-SYSTEM",
+					"--add-opens",
+					"java.base/java.util=ALL-UNNAMED",
+					"--add-opens",
+					"java.base/java.lang=ALL-UNNAMED",
+					"-jar",
+					launcher_jar,
+					"-configuration",
+					config_dir,
+					"-data",
+					ws_dir,
+				}
+
+				return vim.lsp.rpc.start(cmd, dispatchers, {
+					cwd = config.cmd_cwd,
+					env = config.cmd_env,
+					detached = config.detached,
+				})
+			end,
+			root_dir = function(bufnr, on_dir)
+				on_dir(java_root(vim.api.nvim_buf_get_name(bufnr)))
+			end,
 			filetypes = { "java" },
-			-- root_markers = { ".git", "pom.xml", "build.gradle" },
 			settings = {
 				java = {
 					autobuild = {
@@ -155,12 +186,11 @@ return {
 						includeAccessors = true, -- Important for DTOs!
 						includeDecompiledSources = true,
 					},
-					-- 2. CHANGE THIS: Set to 'automatic' instead of 'interactive'
+					-- Set to 'automatic' instead of 'interactive'
 					-- This ensures that when you change a DTO, the index updates immediately
 					configuration = {
 						updateBuildConfiguration = "automatic",
 					},
-					-- 3. ADD THIS: Better indexing for large projects
 					format = { enabled = true },
 					saveActions = { organizeImports = true },
 				},
