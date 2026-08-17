@@ -46,12 +46,12 @@ return {
 
 				opts.desc = "Go to previous diagnostic"
 				keymap.set("n", "[d", function()
-					vim.diagnostic.jump({ count = -1 })
+					vim.diagnostic.jump({ count = -1, float = true })
 				end, opts)
 
 				opts.desc = "Go to next diagnostic"
 				keymap.set("n", "]d", function()
-					vim.diagnostic.jump({ count = 1 })
+					vim.diagnostic.jump({ count = 1, float = true })
 				end, opts)
 
 				opts.desc = "Show documentation for what is under cursor"
@@ -77,8 +77,11 @@ return {
 
 		vim.diagnostic.config({
 			underline = true,
+			-- No inline/virtual rendering: nothing shifts the buffer text around.
+			-- Diagnostics show as gutter signs; the message is a float you ask for
+			-- with <leader>ld (or that follows [d / ]d).
 			virtual_text = false,
-			virtual_lines = { current_line = true },
+			virtual_lines = false,
 			signs = {
 				text = {
 					[vim.diagnostic.severity.ERROR] = "",
@@ -88,9 +91,20 @@ return {
 				},
 			},
 			update_in_insert = false,
-			severity_sort = false,
-			float = false,
+			severity_sort = true,
+			float = {
+				border = "rounded",
+				source = true,
+				header = "",
+				prefix = "",
+				focusable = true,
+			},
 		})
+
+		-- On demand only, focusable so the popup can be scrolled / yanked from.
+		keymap.set("n", "<leader>ld", function()
+			vim.diagnostic.open_float(nil, { scope = "line", focus = true })
+		end, { desc = "Show line diagnostics" })
 
 		-- Set your Java path
 		local java_exec = "/usr/lib/jvm/default-runtime/bin/java"
