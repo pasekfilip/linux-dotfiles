@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Game mode: slow the key repeat rate down while gaming (SUPER + S).
+#
+# The state IS the presence of the Hyprland toggle snippet in
+# ~/.local/state/omarchy/toggles/hypr/, which is the same mechanism Omarchy's
+# own hyprland toggles use (see omarchy-hyprland-toggle). That means the bar
+# indicator and Hyprland can never disagree, and the mode survives the config
+# reloads that `omarchy theme set` triggers.
+
+set -euo pipefail
+
+SOURCE="$HOME/.config/hypr/toggles/game-mode.lua"
+FLAG="$HOME/.local/state/omarchy/toggles/hypr/game-mode.lua"
+
+enabled() { [[ -f $FLAG ]]; }
+
+apply() { hyprctl reload >/dev/null; }
+
+case "${1:-toggle}" in
+  status)
+    # For the bar's `type: command` module. Print nothing when off: the bar does
+    # `outputText = data.text || raw`, so JSON carrying an empty text is falsy
+    # and it renders the raw JSON string instead. No output at all leaves the
+    # module empty, and with keepSpace false it collapses to nothing.
+    if enabled; then
+      printf '{"text":"","tooltip":"Game mode on — key repeat 25","class":"active"}\n'
+    fi
+    ;;
+  on)
+    mkdir -p "$(dirname "$FLAG")"
+    cp "$SOURCE" "$FLAG"
+    apply
+    notify-send -u low "Entering game mode"
+    ;;
+  off)
+    rm -f "$FLAG"
+    apply
+    notify-send -u low "Exiting game mode"
+    ;;
+  toggle)
+    if enabled; then "$0" off; else "$0" on; fi
+    ;;
+  *)
+    echo "Usage: game-mode [toggle|on|off|status]" >&2
+    exit 1
+    ;;
+esac

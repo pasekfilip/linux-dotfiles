@@ -1,6 +1,15 @@
 # All the default Omarchy aliases and functions
 # (don't mess with these directly, just overwrite them here!)
-source ~/.local/share/omarchy/default/bash/rc
+# /etc/omarchy.conf is written by omarchy-dev-link. When absent, force the
+# package default instead of preserving a stale inherited dev-link value before
+# we decide which rc file to source.
+if [[ -f /etc/omarchy.conf ]]; then
+  source /etc/omarchy.conf
+  export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+else
+  export OMARCHY_PATH=/usr/share/omarchy
+fi
+source "$OMARCHY_PATH/default/bash/rc"
 
 alias lsg='ls -lg'
 alias grep='rg'
@@ -10,7 +19,11 @@ alias pns='pi --no-session'
 alias pro='pi --tools read,grep,find,ls,web_fetch,web_search'
 alias pchat='pi --system-prompt " " --tools web_search,web_fetch'
 alias orun='ollama run qwen3.5:9b-q8_0'
-fastfetch
+alias ctl='systemctl'
+# Interactive shells only. Bar modules, hooks, and `ssh host cmd` all run
+# `bash -lc`, which sources this file; an unguarded greeting lands in their
+# stdout (it showed up rendered inside the Omarchy bar).
+[[ $- == *i* ]] && fastfetch
 
 # Add your own exports, aliases, and functions here.
 #

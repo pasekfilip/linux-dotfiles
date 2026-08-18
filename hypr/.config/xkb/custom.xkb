@@ -1,0 +1,76 @@
+// This is a complete, self-contained XKB keymap.
+// Location: ~/.config/xkb/my_complete_layout.xkb
+
+xkb_keymap {
+    // 1. KEYCODES: Maps hardware codes to key names. We use the standard 'evdev'.
+    xkb_keycodes  { include "evdev+aliases(qwerty)"	};
+
+    // 2. TYPES: Defines how modifiers change key levels.
+    xkb_types     {
+        include "complete"
+        type "KLC_LIKE" {
+            modifiers = Shift+Control+Mod1; // Mod1 is the Alt key
+            map[None] = Level1;
+            map[Shift] = Level2;
+            map[Mod1] = Level3;
+            map[Shift+Mod1] = Level4;
+            map[Control] = Level5;
+            map[Shift+Control] = Level6;
+            // Also map Ctrl+Alt to the Alt levels for compatibility (acts like AltGr)
+            map[Control+Mod1] = Level3;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "Alt";
+            level_name[Level4] = "Shift+Alt";
+            level_name[Level5] = "Control";
+            level_name[Level6] = "Shift+Ctrl";
+        };
+    };
+
+    xkb_compatibility "complete" {
+        include "complete"
+    };
+
+    xkb_geometry "pc105" {
+        include "pc(pc105)"
+    };
+
+    // 4. SYMBOLS: The main event. Defines what character each key produces.
+    xkb_symbols "real-prog"  {
+        // CRITICAL: First, include the standard US layout for a PC keyboard.
+        // This defines all the keys we are NOT overriding (like spacebar).
+        include "pc"
+        include "us(basic)"
+
+        name[Group1]= "US (Complete Custom)";
+
+        // --- Number Row (AE) ---
+        key <AE01> { type="KLC_LIKE", symbols[Group1]= [ plus, 1, 1, exclam, 1, exclam ] };
+        key <AE02> { type="KLC_LIKE", symbols[Group1]= [ bracketleft, 2, 2, at, 2, at ] };
+        key <AE03> { type="KLC_LIKE", symbols[Group1]= [ braceleft, 3, 3, numbersign, 3, numbersign ] };
+        key <AE04> { type="KLC_LIKE", symbols[Group1]= [ parenleft, 4, 4, dollar, 4, dollar ] };
+        key <AE05> { type="KLC_LIKE", symbols[Group1]= [ ampersand, 5, 5, percent, 5, percent ] };
+        key <AE06> { type="KLC_LIKE", symbols[Group1]= [ equal, 6, 6, asciicircum, 6, asciicircum ] };
+        key <AE07> { type="KLC_LIKE", symbols[Group1]= [ parenright, 7, 7, ampersand, 7, ampersand ] };
+        key <AE08> { type="KLC_LIKE", symbols[Group1]= [ braceright, 8, 8, asterisk, 8, asterisk ] };
+        key <AE09> { type="KLC_LIKE", symbols[Group1]= [ bracketright, 9, 9, parenleft, 9, parenleft ] };
+        key <AE10> { type="KLC_LIKE", symbols[Group1]= [ dollar, 0, 0, parenright, 0, parenright ] };
+        key <AE11> { type="KLC_LIKE", symbols[Group1]= [ numbersign, asciicircum, minus, underscore, minus, underscore ] };
+        key <AE12> { type="KLC_LIKE", symbols[Group1]= [ exclam, percent, equal, plus, equal, plus ] };
+
+        // --- Top Letter Row (AD) ---
+        key <AD11> { type="KLC_LIKE", symbols[Group1]= [ minus, underscore, bracketleft, braceleft, bracketleft, braceleft ] };
+        key <AD12> { type="KLC_LIKE", symbols[Group1]= [ asterisk, at, bracketright, braceright, bracketright, braceright ] };
+
+        // --- Home Row (AC) ---
+        key <AC10> { type="KLC_LIKE", symbols[Group1]= [ semicolon, colon, semicolon, colon, semicolon, colon ] };
+        key <AC11> { type="KLC_LIKE", symbols[Group1]= [ apostrophe, quotedbl, apostrophe, quotedbl, apostrophe, quotedbl ] };
+
+        // --- Bottom Letter Row (AB) ---
+        key <AB08> { type="KLC_LIKE", symbols[Group1]= [ comma, less, comma, less, comma, less ] };
+
+        // --- Z/Y Swap ---
+        key <AB01> { type="KLC_LIKE", symbols[Group1]= [ y, Y, z, Z, z, Z ] };
+        key <AD06> { type="KLC_LIKE", symbols[Group1]= [ z, Z, y, Y, y, Y ] };
+    };
+};

@@ -1,0 +1,10 @@
+# Snapshots, not symlink targets.
+#
+# `omarchy bar ...` and the bar's drag gestures rewrite shell.json / shell.toml
+# with mktemp + mv, which REPLACES a symlink with a regular file. Stowing them
+# would silently detach this repo from the live config, so they are tracked as
+# copies and refreshed with ./omarchy/sync-shell-config.
+shell\.json
+shell\.toml
+sync-shell-config
+README\.md

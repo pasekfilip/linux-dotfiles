@@ -3,7 +3,7 @@
 -- Omarchy themes ship a neovim.lua, but it is a LazyVim spec that pins
 -- LazyVim/LazyVim and sets opts.colorscheme on it, so it can't be consumed
 -- from a plain lazy.nvim config. Instead this reads the theme name Omarchy
--- writes to ~/.config/omarchy/current/theme.name and maps it to a colorscheme
+-- writes to <state>/omarchy/current/theme.name and maps it to a colorscheme
 -- declared in filip/plugins/theme.lua.
 --
 -- To support another Omarchy theme: add its plugin to theme.lua (lazy = true)
@@ -12,7 +12,9 @@
 
 local M = {}
 
-local CURRENT = vim.fn.expand("~/.config/omarchy/current")
+-- Omarchy 4 ("quattro") moved this out of ~/.config into XDG state.
+local STATE = vim.env.XDG_STATE_HOME or vim.fn.expand("~/.local/state")
+local CURRENT = STATE .. "/omarchy/current"
 local THEME_NAME = CURRENT .. "/theme.name"
 local COLORS_TOML = CURRENT .. "/theme/colors.toml"
 
@@ -25,6 +27,8 @@ local FALLBACK = {
 
 -- Omarchy theme name -> nvim colorscheme. Choices follow each theme's own
 -- neovim.lua so nvim matches what the rest of the desktop is showing.
+-- last-horizon and lupine ship no neovim.lua of their own, so there is no
+-- upstream colorscheme to follow; they fall through to FALLBACK.
 M.MAP = {
 	["catppuccin"] = { plugin = "catppuccin", colorscheme = "catppuccin" },
 	["catppuccin-latte"] = { plugin = "catppuccin", colorscheme = "catppuccin-latte" },
@@ -42,6 +46,7 @@ M.MAP = {
 	["retro-82"] = { plugin = "retro-82.nvim", colorscheme = "retro-82" },
 	["ristretto"] = { plugin = "monokai-pro.nvim", colorscheme = "monokai-pro" },
 	["rose-pine"] = { plugin = "rose-pine", colorscheme = "rose-pine-dawn" },
+	["solitude"] = { plugin = "ashen.nvim", colorscheme = "ashen" },
 	["tokyo-night"] = { plugin = "tokyonight.nvim", colorscheme = "tokyonight-night" },
 	["vantablack"] = { plugin = "vantablack.nvim", colorscheme = "vantablack" },
 	["white"] = { plugin = "white.nvim", colorscheme = "white" },
@@ -56,8 +61,8 @@ function M.theme_name()
 	return vim.trim(lines[1])
 end
 
---- "light" or "dark", from the luminance of the theme's own background color.
---- nil if the palette can't be read.
+--- "light" or "dark", from the theme's own `mode`, or the luminance of its
+--- background color for themes that predate it. nil if the palette can't be read.
 ---
 --- This has to be set before the colorscheme: gruvbox, everforest and kanagawa
 --- pick their variant from vim.o.background, so going from a light Omarchy
@@ -66,6 +71,14 @@ function M.background()
 	local ok, lines = pcall(vim.fn.readfile, COLORS_TOML)
 	if not ok or not lines then
 		return nil
+	end
+
+	-- Omarchy 4 states this outright, so prefer it over guessing.
+	for _, line in ipairs(lines) do
+		local mode = line:match('^%s*mode%s*=%s*"(%a+)"')
+		if mode == "light" or mode == "dark" then
+			return mode
+		end
 	end
 
 	-- Anchored per line: several themes also define selection_background and

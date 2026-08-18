@@ -99,4 +99,5 @@ return {
 	{ "OldJobobo/miasma.nvim", lazy = true, priority = 1000 },
 	{ "OldJobobo/retro-82.nvim", lazy = true, priority = 1000 },
 	{ "ribru17/bamboo.nvim", lazy = true, priority = 1000 }, -- osaka-jade
+	{ "ficcdaf/ashen.nvim", lazy = true, priority = 1000 }, -- solitude
 }

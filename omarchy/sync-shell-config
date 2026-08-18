@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Copy the live Omarchy shell config into this repo (or back out with --restore).
+#
+# shell.json and shell.toml can't be stow symlinks: `omarchy bar ...`, the bar's
+# drag-to-reorder gestures, and `omarchy display text size` all write them with
+# mktemp + mv, which replaces a symlink with a real file. So they live here as
+# copies. Run this after changing the bar.
+
+set -euo pipefail
+
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.config/omarchy"
+live="$HOME/.config/omarchy"
+
+for f in shell.json shell.toml; do
+  if [[ ${1:-} == --restore ]]; then
+    install -m 600 "$repo/$f" "$live/$f"
+    echo "restored $f -> $live"
+  else
+    install -m 600 "$live/$f" "$repo/$f"
+    echo "captured $f -> $repo"
+  fi
+done
