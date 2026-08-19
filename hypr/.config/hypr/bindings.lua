@@ -32,9 +32,13 @@ o.bind("ALT + J", "Move focus down", hl.dsp.focus({ direction = "d" }))
 
 -- Switch workspaces with ALT + [0-9], move windows with ALT + SHIFT + [0-9]
 for workspace = 1, 10 do
-  local key = "code:" .. tostring(workspace + 9)
-  o.bind("ALT + " .. key, "Switch to workspace " .. workspace, hl.dsp.focus({ workspace = tostring(workspace) }))
-  o.bind("ALT + SHIFT + " .. key, "Move window to workspace " .. workspace, hl.dsp.window.move({ workspace = tostring(workspace) }))
+	local key = "code:" .. tostring(workspace + 9)
+	o.bind("ALT + " .. key, "Switch to workspace " .. workspace, hl.dsp.focus({ workspace = tostring(workspace) }))
+	o.bind(
+		"ALT + SHIFT + " .. key,
+		"Move window to workspace " .. workspace,
+		hl.dsp.window.move({ workspace = tostring(workspace) })
+	)
 end
 
 -- Move the active window with ALT + SHIFT + hjkl. Unlike swapping, this moves
@@ -88,6 +92,10 @@ o.bind("ALT + code:21", "Brightness up", "omarchy-brightness-display +5%", { rep
 o.bind("ALT + code:20", "Brightness down", "omarchy-brightness-display 5%-", { repeating = true })
 
 -- Screenshots
-o.bind("ALT + Q", "Screenshot of region", 'grim -g "$(slurp)" - | wl-copy')
-o.bind("ALT + R", "OCR Japanese text from region", 'grim -g "$(slurp)" /tmp/ocr.png && tesseract -l jpn /tmp/ocr.png - | tr -d "[:space:]" | wl-copy && rm /tmp/ocr.png')
+o.bind("ALT + Q", "Screenshot of region", "omarchy-capture-screenshot")
+o.bind(
+	"ALT + R",
+	"OCR Japanese text from region",
+	'grim -g "$(slurp)" /tmp/ocr.png && tesseract -l jpn /tmp/ocr.png - | tr -d "[:space:]" | wl-copy && rm /tmp/ocr.png'
+)
 o.bind("SUPER + V", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")
