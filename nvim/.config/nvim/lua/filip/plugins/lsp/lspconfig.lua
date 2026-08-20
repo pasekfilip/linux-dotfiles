@@ -155,7 +155,11 @@ return {
 			-- `attempt to call field 'request' (a nil value)` during initialize.
 			cmd = function(dispatchers, config)
 				local root = config.root_dir or java_root(0)
-				local ws_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. vim.fn.fnamemodify(root, ":p:t")
+				-- basename of the root, not fnamemodify(":p:t"): ":p" appends a trailing
+				-- slash for directories, so ":t" returns "" and every project ends up
+				-- sharing one Eclipse workspace -- reference search then spans all of them.
+				local ws_name = vim.fs.basename((root:gsub("/+$", "")))
+				local ws_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. ws_name
 
 				local cmd = {
 					java_exec,
@@ -163,8 +167,7 @@ return {
 					"-Declipse.application=org.eclipse.jdt.ls.core.id1",
 					"-Dosgi.bundles.defaultStartLevel=4",
 					"-Declipse.product=org.eclipse.jdt.ls.core.product",
-					"-Dlog.protocol=true",
-					"-Dlog.level=ALL",
+					"-Dlog.level=ERROR",
 					"-Xmx4g",
 					"-XX:+UseG1GC",
 					"-XX:+UseStringDeduplication",
@@ -198,7 +201,7 @@ return {
 					},
 					references = {
 						includeAccessors = true, -- Important for DTOs!
-						includeDecompiledSources = true,
+						includeDecompiledSources = false, -- searching 328 JAR indexes per gR
 					},
 					-- Set to 'automatic' instead of 'interactive'
 					-- This ensures that when you change a DTO, the index updates immediately
