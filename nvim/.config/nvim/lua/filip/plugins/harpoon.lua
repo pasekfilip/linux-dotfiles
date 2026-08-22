@@ -17,25 +17,19 @@ return {
 		set("n", "<Up>", function() harpoon:list():select(3) end)
 		set("n", "<Down>", function() harpoon:list():select(4) end)
 
-		-- basic telescope configuration
-		local conf = require("telescope.config").values
-		local function toggle_telescope(harpoon_files)
-			local file_paths = {}
-			for _, item in ipairs(harpoon_files.items) do
-				table.insert(file_paths, item.value)
-			end
+		-- The list is already ordered and small, so this just needs fzf over a
+		-- fixed table -- no finder/sorter plumbing like the telescope version.
+		local function toggle_fzf(harpoon_files)
+			local paths = vim.tbl_map(function(item)
+				return item.value
+			end, harpoon_files.items)
 
-			require("telescope.pickers").new({}, {
-				prompt_title = "Harpoon",
-				finder = require("telescope.finders").new_table({
-					results = file_paths,
-				}),
-				previewer = conf.file_previewer({}),
-				sorter = conf.generic_sorter({}),
-			}):find()
+			require("fzf-lua").fzf_exec(paths, {
+				prompt = "Harpoon> ",
+				actions = { ["default"] = require("fzf-lua").actions.file_edit },
+			})
 		end
 
-		set("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
-			{ desc = "Open harpoon window" })
+		set("n", "<C-e>", function() toggle_fzf(harpoon:list()) end, { desc = "Open harpoon window" })
 	end,
 }

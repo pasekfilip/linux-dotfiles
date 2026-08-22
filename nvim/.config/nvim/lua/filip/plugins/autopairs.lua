@@ -33,6 +33,6 @@ return {
 			highlight_grey = "Comment",
 		},
 
-		disable_filetype = { "TelescopePrompt", "vim", "spectre_panel", "grug-far" },
+		disable_filetype = { "vim", "spectre_panel", "grug-far" },
 	},
 }

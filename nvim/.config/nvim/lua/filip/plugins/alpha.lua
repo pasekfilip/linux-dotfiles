@@ -21,7 +21,7 @@ return {
 			dashboard.button("e", "  新しいファイル", "<cmd>ene <BAR> startinsert <cr>"),
 			dashboard.button("s", "󱑒  Restore Session", [[<cmd>lua require("persistence").load()<cr>]]),
 			dashboard.button("d", "  Database UI (Dadbod)", "<cmd>DBUIToggle<cr>"),
-			dashboard.button("p", "  Find Project", "<cmd>Telescope find_files<cr>"),
+			dashboard.button("p", "  Find Project", "<cmd>FzfLua files<cr>"),
 			dashboard.button("q", "󰅚  終了(しゅうりょう)", "<cmd>qa<cr>"),
 		}
 
