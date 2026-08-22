@@ -196,8 +196,6 @@ config.keys = {
 		key = "-",
 		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
-	-- CTRL+hjkl (move) and CTRL+SHIFT+hjkl (resize) are added by smart-splits below;
-	-- they act on wezterm panes, or are forwarded to nvim when nvim has the focus.
 	{
 		mods = "CTRL",
 		key = "=",
