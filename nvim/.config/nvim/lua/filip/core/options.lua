@@ -2,7 +2,6 @@ local opt = vim.opt
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.g.undotree_DiffCommand = "diff"
 
 -- Basic settings
 opt.number = true -- Line numbers
@@ -67,6 +66,10 @@ opt.mouse = "a" -- Enable mouse support
 opt.clipboard:append("unnamedplus") -- Use system clipboard
 opt.modifiable = true -- Allow buffer modifications
 opt.wildmode = "longest:full,full" -- Command-line completion mode
+
+-- :grep already defaults to `rg --vimgrep -uu` on 0.11+, but -uu means
+-- --no-ignore --hidden, so it walks target/ and .git in the Java repos.
+opt.grepprg = "rg --vimgrep"
 
 -- Split behavior
 opt.splitbelow = true -- Horizontal splits go below
