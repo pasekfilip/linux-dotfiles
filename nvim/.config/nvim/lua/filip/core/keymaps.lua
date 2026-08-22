@@ -162,3 +162,17 @@ set("n", "k", function()
 		return "k"
 	end
 end, { expr = true })
+
+-- Undo tree, from Neovim's own nvim.undotree package (replaced mbbill/undotree).
+-- It ships as an opt package, so it needs packadd before :Undotree exists, and
+-- it only knows how to open -- the toggle half is ours.
+set("n", "<leader>u", function()
+	for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
+		if vim.bo[api.nvim_win_get_buf(win)].filetype == "nvim-undotree" then
+			api.nvim_win_close(win, true)
+			return
+		end
+	end
+	vim.cmd.packadd("nvim.undotree")
+	require("undotree").open()
+end, { desc = "Toggle undo tree" })
