@@ -9,7 +9,12 @@ return {
         config = function()
             local image_preview = require("image_preview");
             require("oil").setup {
-                columns = { "icon" },
+                columns = {
+                    "permissions",
+                    "size",
+                    "mtime",
+                    "icon",
+                },
                 keymaps = {
                     ["<leader>i"] = {
                         callback = function()
