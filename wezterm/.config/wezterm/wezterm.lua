@@ -236,4 +236,18 @@ smart_splits.apply_to_config(config, {
 	},
 })
 
+local ctrl_l = wezterm.action_callback(function(win, pane)
+	if smart_splits.is_vim(pane) or win:active_tab():get_pane_direction("Right") == nil then
+		win:perform_action(wezterm.action.SendKey({ key = "l", mods = "CTRL" }), pane)
+	else
+		win:perform_action(wezterm.action.ActivatePaneDirection("Right"), pane)
+	end
+end)
+
+for _, key in ipairs(config.keys) do
+	if key.key == "l" and key.mods == "CTRL" then
+		key.action = ctrl_l
+	end
+end
+
 return config
