@@ -3,24 +3,54 @@ local set = vim.keymap.set
 local del = vim.keymap.del
 local api = vim.api
 
+del("n", "<C-w>d")
+del("n", "<C-W><C-D>")
+
 set("n", "<C-s>", ":w<CR>", { desc = "Save file", noremap = true, silent = true })
 set("i", "<C-s>", "<cmd>:w<CR>", { desc = "Save file", noremap = true, silent = true })
 
 -- window management
-del("n", "<C-w>d")
-del("n", "<C-W><C-D>")
 set("n", "<C-w>", "<cmd>:q<CR>", { desc = "Close current window" })
 set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
-set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
-set("n", "<leader>sq", "<cmd>close<CR>", { desc = "Close current split" })
-set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search with esc" })
+set("n", "<C-h>", "<C-w>h")
+set("n", "<C-j>", "<C-w>j")
+set("n", "<C-k>", "<C-w>k")
+set("n", "<C-l>", "<C-w>l")
 
--- <C-arrows> resize splits and wezterm panes, see plugins/smart-splits.lua
+local function resize(direction, vertical)
+	vertical = vertical or ""
+	local current_window_num = vim.fn.winnr()
+	local count_left = vim.fn.winnr(direction)
+
+	if count_left == current_window_num then
+		vim.cmd(vertical .. " resize -2")
+	else
+		vim.cmd(vertical .. " resize +2")
+	end
+end
+
+set("n", "<C-left>", function()
+	resize("1h", "vertical")
+end)
+
+set("n", "<C-right>", function()
+	resize("1l", "vertical")
+end)
+
+set("n", "<C-up>", function()
+	resize("1k")
+end)
+
+set("n", "<C-down>", function()
+	resize("1j")
+end)
+
+set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search with esc" })
 
 set("n", "<C-a>", "ggVG", { desc = "select all everything inside current file" })
 
-set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Go into the normal mode in terminal mode" })
+set("t", "<Esc>", "<C-\\><C-n>", { desc = "Go into the normal mode in terminal mode" })
 
 set("v", "J", ":m '>+1<CR>gv=gv")
 set("v", "K", ":m '<-2<CR>gv=gv")
@@ -87,40 +117,9 @@ set("n", "<leader>jb", function()
 				end
 			end,
 		})
-
-		-- 3. FOLLOW THE PRINT (Auto-scroll)
-		-- To auto-scroll, the cursor must be on the last line of the terminal
 		api.nvim_win_set_cursor(term_win, { vim.api.nvim_buf_line_count(term_buf), 0 })
-		-- -- 4. Jump back to your code
-		-- api.nvim_set_current_win(main_win)
-	end
-
-	-- --- C++ BUILD AND RUN ---
-	if vim.bo.filetype == "cpp" then
-		local cmd
-		local build_dir = vim.fs.joinpath(vim.fn.getcwd(), "build")
-
-		if vim.fn.has("unix") == 1 then
-			-- On Linux, the executable usually has no extension
-			cmd = string.format("cd %s && cmake --build . && ./main", build_dir)
-			print("Running Linux C++ build...")
-		elseif vim.fn.has("win32") == 1 then
-			-- On Windows, it has .exe
-			cmd = string.format([[cd %s && cmake --build . && main.exe]], build_dir)
-			print("Running Windows C++ build...")
-		end
-
-		if cmd then
-			vim.cmd("!" .. cmd)
-		end
 	end
 end, { noremap = true, silent = false }) -- Set silent=false to see the print messages
-
--- set("n", "<F5>", function()
--- 	if vim.bo.filetype == "cpp" then
--- 		vim.cmd("!cd " .. vim.fn.getcwd() .. "\\build && cmake --build . && main.exe")
--- 	end
--- end, { noremap = true, silent = true })
 
 api.nvim_create_autocmd("FileType", {
 	pattern = { "sql", "mysql", "pgsql", "plsql" },
@@ -130,18 +129,6 @@ api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-api.nvim_create_autocmd("FileType", {
-	pattern = "lua",
-	callback = function()
-		set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line", buffer = true, silent = true })
-		set(
-			"n",
-			"<leader><leader>x",
-			"<cmd>source %<CR>",
-			{ desc = "Execute the current file", buffer = true, silent = true }
-		)
-	end,
-})
 -- very cool remap
 set("n", "j", function()
 	local count = vim.v.count
@@ -163,9 +150,6 @@ set("n", "k", function()
 	end
 end, { expr = true })
 
--- Undo tree, from Neovim's own nvim.undotree package (replaced mbbill/undotree).
--- It ships as an opt package, so it needs packadd before :Undotree exists, and
--- it only knows how to open -- the toggle half is ours.
 set("n", "<leader>u", function()
 	for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
 		if vim.bo[api.nvim_win_get_buf(win)].filetype == "nvim-undotree" then

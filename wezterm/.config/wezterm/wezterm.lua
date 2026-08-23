@@ -1,6 +1,4 @@
 local wezterm = require("wezterm")
-local resurrect = wezterm.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
-local smart_splits = wezterm.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
 local config = {}
 
 if wezterm.config_builder then
@@ -50,9 +48,7 @@ wezterm.on("window-opacity-change", function(window)
 	window:set_config_overrides(overrides)
 end)
 
-resurrect.state_manager.periodic_save()
 local act = wezterm.action
-
 config.keys = {
 	{
 		key = "r",
@@ -65,61 +61,10 @@ config.keys = {
 		}),
 	},
 	{
-		key = "b",
-		mods = "SHIFT | CTRL",
-		action = wezterm.action_callback(function(win, pane)
-			resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
-			resurrect.window_state.save_window_action()
-		end),
-	},
-	-- {
-	-- 	key = "r",
-	-- 	mods = "SHIFT | CTRL",
-	-- 	action = wezterm.action_callback(function(win, pane)
-	-- 		resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, label)
-	-- 			local type = string.match(id, "^([^/]+)") -- match before '/'
-	-- 			id = string.match(id, "([^/]+)$") -- match after '/'
-	-- 			id = string.match(id, "(.+)%..+$") -- remove file extention
-	-- 			local opts = {
-	-- 				relative = true,
-	-- 				restore_text = true,
-	-- 				on_pane_restore = resurrect.tab_state.default_on_pane_restore,
-	-- 			}
-	-- 			if type == "workspace" then
-	-- 				local state = resurrect.state_manager.load_state(id, "workspace")
-	-- 				resurrect.workspace_state.restore_workspace(state, opts)
-	-- 			elseif type == "window" then
-	-- 				local state = resurrect.state_manager.load_state(id, "window")
-	-- 				resurrect.window_state.restore_window(pane:window(), state, opts)
-	-- 			elseif type == "tab" then
-	-- 				local state = resurrect.state_manager.load_state(id, "tab")
-	-- 				resurrect.tab_state.restore_tab(pane:tab(), state, opts)
-	-- 			end
-	-- 		end)
-	-- 	end),
-	-- },
-	{
 		key = "f",
 		mods = "SHIFT|CTRL",
 		action = wezterm.action.Search("CurrentSelectionOrEmptyString"),
 	},
-	{
-		key = "u",
-		mods = "SHIFT | CTRL",
-		action = wezterm.action.CopyMode("ClearPattern"),
-	},
-	-- {
-	--     key = 'p',
-	--     mods = 'CTRL',
-	--     action = wezterm.action.CopyMode 'PriorMatch'
-	--
-	-- },
-	-- {
-	--     key = 'n',
-	--     mods = 'CTRL',
-	--     action = wezterm.action.CopyMode 'NextMatch'
-	--
-	-- },
 	{
 		mods = "CTRL | SHIFT",
 		key = "d",
@@ -130,11 +75,6 @@ config.keys = {
 		key = "g",
 		action = wezterm.action.EmitEvent("window-opacity-change"),
 	},
-	-- {
-	-- 	key = "m",
-	-- 	mods = "CTRL|SHIFT",
-	-- 	action = wezterm.action.ShowLauncher,
-	-- },
 	{
 		mods = "CTRL",
 		key = "Space",
@@ -216,6 +156,47 @@ config.keys = {
 		key = ">",
 		action = wezterm.action.MoveTabRelative(1),
 	},
+	{
+
+		mods = "CTRL | SHIFT",
+		key = "h",
+		action = wezterm.action.ActivatePaneDirection("Left"),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "j",
+		action = wezterm.action.ActivatePaneDirection("Down"),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "k",
+		action = wezterm.action.ActivatePaneDirection("Up"),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "l",
+		action = wezterm.action.ActivatePaneDirection("Right"),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "LeftArrow",
+		action = wezterm.action.AdjustPaneSize({ "Left", 5 }),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "RightArrow",
+		action = wezterm.action.AdjustPaneSize({ "Right", 5 }),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "DownArrow",
+		action = wezterm.action.AdjustPaneSize({ "Down", 5 }),
+	},
+	{
+		mods = "CTRL | SHIFT",
+		key = "UpArrow",
+		action = wezterm.action.AdjustPaneSize({ "Up", 5 }),
+	},
 }
 
 local current_layout_number_row = { "1", "2", "3", "4", "5" }
@@ -225,29 +206,6 @@ for i, v in ipairs(current_layout_number_row) do
 		key = v,
 		action = wezterm.action.ActivateTab(i - 1),
 	})
-end
-
-smart_splits.apply_to_config(config, {
-	default_amount = 5,
-	direction_keys = { "h", "j", "k", "l" },
-	modifiers = {
-		move = "CTRL",
-		resize = { wezterm = "CTRL|SHIFT", neovim = "META" },
-	},
-})
-
-local ctrl_l = wezterm.action_callback(function(win, pane)
-	if smart_splits.is_vim(pane) or win:active_tab():get_pane_direction("Right") == nil then
-		win:perform_action(wezterm.action.SendKey({ key = "l", mods = "CTRL" }), pane)
-	else
-		win:perform_action(wezterm.action.ActivatePaneDirection("Right"), pane)
-	end
-end)
-
-for _, key in ipairs(config.keys) do
-	if key.key == "l" and key.mods == "CTRL" then
-		key.action = ctrl_l
-	end
 end
 
 return config
