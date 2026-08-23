@@ -19,15 +19,17 @@ return {
 		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "Find buffers" },
 		{ "<leader>fs", "<cmd>FzfLua live_grep<cr>", desc = "Find string in cwd" },
 		{ "<leader>fc", "<cmd>FzfLua grep_cword<cr>", desc = "Find string under cursor in cwd" },
-		{ "<leader>fd", "<cmd>FzfLua diagnostics_workspace<cr>", desc = "Get diagnostics" },
 		{ "<leader>fh", "<cmd>FzfLua helptags<cr>", desc = "Find help tags" },
 		{ "<leader>ft", "<cmd>TodoFzfLua<cr>", desc = "Find todos" },
 		{
-			"<leader>fe",
+			"<leader>fp",
 			function()
-				require("fzf-lua").diagnostics_workspace({ severity_only = "error" })
+				local list = vim.fn.systemlist("zoxide query -l")
+				vim.ui.select(list, {}, function(choice)
+					vim.cmd("cd " .. choice)
+					require("oil").open(choice)
+				end)
 			end,
-			desc = "Workspace Errors",
 		},
 	},
 	config = function()
