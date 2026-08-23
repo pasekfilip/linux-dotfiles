@@ -4,13 +4,14 @@ return {
 		version = "*",
 		keys = {
 			{ "<leader>t", "<cmd>ToggleTerm<CR>" },
+            -- { "t", "<Esc>", "<C-\\><C-n>" },
 		},
 		config = function()
 			require("toggleterm").setup({
-				size = 100,
+				size = 50,
 				-- open_mapping = [[<C-/]],
 				shading_factor = 2,
-				direction = "float",
+				direction = "vertical",
 				close_on_exit = true,
 			})
 		end,
