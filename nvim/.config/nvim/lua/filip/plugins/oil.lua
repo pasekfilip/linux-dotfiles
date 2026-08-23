@@ -1,32 +1,35 @@
 return {
     {
-        'stevearc/oil.nvim',
+        "stevearc/oil.nvim",
         dependencies = {
-        { 'nvim-tree/nvim-web-devicons' },
-        { 'adelarsq/image_preview.nvim', lazy = true },
+            { "nvim-tree/nvim-web-devicons" },
+            { "adelarsq/image_preview.nvim", lazy = true },
         },
         lazy = false,
         config = function()
-            local image_preview = require("image_preview");
-            require("oil").setup {
+            local image_preview = require("image_preview")
+            require("oil").setup({
                 columns = {
                     "permissions",
                     "size",
                     "mtime",
                     "icon",
                 },
+                view_options = {
+                    show_hidden = true,
+                },
                 keymaps = {
                     ["<leader>i"] = {
                         callback = function()
-                            image_preview.PreviewImageOil();
+                            image_preview.PreviewImageOil()
                         end,
                     },
                     ["<C-s>"] = false,
                     ["<C-h>"] = false,
                     ["<C-l>"] = false,
-                }
-            }
+                },
+            })
         end,
-        vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-    }
+        vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" }),
+    },
 }
