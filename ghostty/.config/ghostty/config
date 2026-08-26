@@ -1,0 +1,104 @@
+# Ghostty as a plain renderer -- tmux owns tabs, splits, scrollback and copy
+# mode. Anything here that looks like a multiplexer feature is deliberately
+# absent or unbound so the keystroke reaches tmux instead.
+
+# Colors come from the active Omarchy theme, same source alacritty/btop/foot
+# read. `?` makes it optional so a missing theme dir doesn't fail the config.
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+
+# Font
+font-family = "CaskaydiaMono Nerd Font"
+font-size = 20
+
+# Window
+background-opacity = 0.98
+window-padding-x = 4
+window-padding-y = 4,0
+# Split leftover sub-cell space evenly instead of dumping it all on the
+# right and bottom edge, which reads as uneven padding against wezterm.
+window-padding-balance = true
+window-decoration = none
+resize-overlay = never
+confirm-close-surface = false
+gtk-titlebar = false
+gtk-toolbar-style = flat
+mouse-scroll-multiplier = 0.95
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+
+# ssh-env ships terminfo to remote hosts so TERM=xterm-ghostty works over ssh.
+# no-cursor leaves cursor shape to nvim rather than the shell integration.
+shell-integration-features = no-cursor,ssh-env
+
+# io_uring backend stalls under Hyprland.
+# https://github.com/ghostty-org/ghostty/discussions/3224
+async-backend = epoll
+
+# --- Chords forwarded to tmux --------------------------------------------
+# These are sent as explicit CSI-u sequences rather than left to protocol
+# negotiation. Ghostty's legacy encoding drops the shift entirely --
+# Ctrl+Shift+T arrives as a bare ^T, indistinguishable from Ctrl+T -- so tmux
+# could never match the binding. Emitting the sequence outright removes the
+# negotiation from the picture, the same trick Omarchy already uses for
+# shift+enter below.
+#
+# Encoding: CSI <unicode-codepoint> ; <mods> u, mods = 1 + shift(1) + ctrl(4).
+# Every sequence here is verified against this tmux config.
+
+# Panes
+keybind = ctrl+shift+s=csi:115;6u
+keybind = ctrl+shift+-=csi:45;6u
+keybind = ctrl+shift+w=csi:119;6u
+keybind = ctrl+shift+h=csi:104;6u
+keybind = ctrl+shift+j=csi:106;6u
+keybind = ctrl+shift+k=csi:107;6u
+keybind = ctrl+shift+l=csi:108;6u
+
+# Pane resize (arrows use CSI 1;<mods><final>, not the u form)
+keybind = ctrl+shift+left=csi:1;6D
+keybind = ctrl+shift+right=csi:1;6C
+keybind = ctrl+shift+up=csi:1;6A
+keybind = ctrl+shift+down=csi:1;6B
+
+# Windows
+keybind = ctrl+shift+t=csi:116;6u
+keybind = ctrl+shift+p=csi:112;6u
+keybind = ctrl+shift+n=csi:110;6u
+# NOTE: these use W3C physical key codes, not characters.
+# ~/.config/xkb/custom.xkb gives AB08 a Shift+Ctrl level emitting `less` (not
+# `comma`), and puts the digits on Shift with `+ [ { ( &` at the base level.
+# So `ctrl+shift+,` and `ctrl+one` can never match what the layout produces.
+# Physical codes match key position and ignore the remapping.
+keybind = ctrl+shift+Comma=csi:44;6u
+keybind = ctrl+shift+Period=csi:46;6u
+keybind = ctrl+shift+r=csi:114;6u
+
+keybind = ctrl+Digit1=csi:49;5u
+keybind = ctrl+Digit2=csi:50;5u
+keybind = ctrl+Digit3=csi:51;5u
+keybind = ctrl+Digit4=csi:52;5u
+keybind = ctrl+Digit5=csi:53;5u
+
+# Copy mode / search
+keybind = ctrl+shift+x=csi:120;6u
+keybind = ctrl+shift+f=csi:102;6u
+
+# --- Handled by ghostty itself -------------------------------------------
+keybind = ctrl+shift+g=toggle_background_opacity
+keybind = ctrl+backspace=text:\x17
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = shift+insert=paste_from_clipboard
+keybind = ctrl+insert=copy_to_clipboard
+
+# Send Shift+Enter as CSI-u so TUIs (nvim, Claude Code) can tell it apart from
+# a plain Enter.
+keybind = shift+enter=csi:13;2u
+
+# Kept from the previous ghostty config; matches your alacritty binding.
+keybind = f11=toggle_fullscreen

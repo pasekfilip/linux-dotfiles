@@ -24,12 +24,25 @@ return {
 		{
 			"<leader>fp",
 			function()
+				-- Was: cd + oil in this same nvim. With one tmux session per
+				-- project that mixes LSP roots, buffers and marks across
+				-- projects, so hand the switch to tmux-sessionizer instead --
+				-- same zoxide list, but each project keeps its own nvim.
+				-- Falls back to the old behaviour outside tmux.
+				if vim.env.TMUX then
+					vim.fn.system("tmux display-popup -E tmux-sessionizer")
+					return
+				end
 				local list = vim.fn.systemlist("zoxide query -l")
 				vim.ui.select(list, {}, function(choice)
-					vim.cmd("cd " .. choice)
+					if not choice then
+						return
+					end
+					vim.cmd("cd " .. vim.fn.fnameescape(choice))
 					require("oil").open(choice)
 				end)
 			end,
+			desc = "Switch project session",
 		},
 	},
 	config = function()

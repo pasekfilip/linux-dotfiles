@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Fuzzy-pick a directory and drop into a tmux session for it, creating the
+# session if it doesn't exist yet.
+#
+# Sources candidates from zoxide rather than a hardcoded project list, so the
+# ranking follows where you actually work -- the same source as the <leader>fp
+# picker in nvim.
+#
+# Bound to Ctrl-f in bash (outside tmux) and prefix+f inside tmux.
+
+set -uo pipefail
+
+if [[ $# -eq 1 ]]; then
+    selected=$1
+else
+    selected=$(zoxide query -l | fzf \
+        --prompt='session> ' \
+        --reverse \
+        --border \
+        --height=100%) || exit 0
+fi
+
+[[ -z ${selected:-} ]] && exit 0
+[[ -d $selected ]] || { echo "tmux-sessionizer: no such directory: $selected" >&2; exit 1; }
+
+# tmux treats '.' and ':' as separators in target names, so they can't appear
+# in a session name.
+name=$(basename "$selected" | tr '.:' '__')
+
+# -t= is an exact match; without it a prefix match would wrongly report a hit.
+if ! tmux has-session -t="$name" 2>/dev/null; then
+    tmux new-session -ds "$name" -c "$selected"
+fi
+
+if [[ -z ${TMUX:-} ]]; then
+    tmux attach -t "$name"
+else
+    tmux switch-client -t "$name"
+fi

@@ -4,10 +4,10 @@
 # package default instead of preserving a stale inherited dev-link value before
 # we decide which rc file to source.
 if [[ -f /etc/omarchy.conf ]]; then
-  source /etc/omarchy.conf
-  export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
+    source /etc/omarchy.conf
+    export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
 else
-  export OMARCHY_PATH=/usr/share/omarchy
+    export OMARCHY_PATH=/usr/share/omarchy
 fi
 source "$OMARCHY_PATH/default/bash/rc"
 
@@ -23,7 +23,7 @@ alias ctl='systemctl'
 # Interactive shells only. Bar modules, hooks, and `ssh host cmd` all run
 # `bash -lc`, which sources this file; an unguarded greeting lands in their
 # stdout (it showed up rendered inside the Omarchy bar).
-[[ $- == *i* ]] && fastfetch
+# [[ $- == *i* ]] && fastfetch
 
 # Add your own exports, aliases, and functions here.
 #
@@ -43,3 +43,8 @@ export NVM_DIR="$HOME/.config/nvm"
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/home/filip/.lmstudio/bin"
 # End of LM Studio CLI section
+
+# Ctrl-f: fuzzy-pick a project (zoxide) and attach to its tmux session.
+# Guarded because `bind` only exists in interactive shells, and this file is
+# also sourced by `bash -lc` for bar modules and `ssh host cmd`.
+[[ $- == *i* ]] && bind -x '"\C-f": tmux-sessionizer'

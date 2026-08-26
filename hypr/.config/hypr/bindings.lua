@@ -6,12 +6,12 @@
 require("default.hypr.bindings.media")
 
 -- Applications
-o.bind("SUPER + ALT + RETURN", "Tmux", 'uwsm-app -- xdg-terminal-exec --dir="$(omarchy-cmd-terminal-cwd)" tmux new')
-o.bind("ALT + RETURN", "Terminal", { launch = "wezterm" })
+o.bind("ALT + RETURN", "Terminal", 'uwsm-app -- xdg-terminal-exec --dir="$(omarchy-cmd-terminal-cwd)"')
 o.bind("ALT + E", "File manager", { launch = "nautilus --new-window" })
 o.bind("ALT + B", "Browser", "omarchy-launch-browser")
 o.bind("ALT + M", "Music", { launch = "spotify" })
-o.bind("ALT + T", "Activity", "omarchy-launch-tui btop --preset 1")
+
+o.bind("ALT + T", "Activity", "uwsm-app -- ghostty --class=org.omarchy.btop --font-size=9 -e btop --preset 1")
 o.bind("ALT + SLASH", "Passwords", { launch = "1password" })
 
 o.bind("ALT + A", "AI Studio", { webapp = "https://aistudio.google.com/" })
