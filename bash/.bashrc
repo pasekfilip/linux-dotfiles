@@ -48,3 +48,10 @@ export PATH="$PATH:/home/filip/.lmstudio/bin"
 # Guarded because `bind` only exists in interactive shells, and this file is
 # also sourced by `bash -lc` for bar modules and `ssh host cmd`.
 [[ $- == *i* ]] && bind -x '"\C-f": tmux-sessionizer'
+
+# Ctrl-S is the tty's XOFF (software flow control): it halts all output until
+# Ctrl-Q (XON) resumes it, which looks exactly like a frozen terminal. Nothing
+# in this setup wants flow control, and Ctrl+Shift+S (tmux split-right) is a
+# thumb-slip away. Interactive-only: stty errors when stdin isn't a tty, and
+# this file is also sourced by `bash -lc` for bar modules and `ssh host cmd`.
+[[ $- == *i* ]] && stty -ixon

@@ -1,39 +1,122 @@
 #!/usr/bin/env bash
-# Fuzzy-pick a directory and drop into a tmux session for it, creating the
-# session if it doesn't exist yet.
+# Unified tmux session switcher.
 #
-# Sources candidates from zoxide rather than a hardcoded project list, so the
-# ranking follows where you actually work -- the same source as the <leader>fp
-# picker in nvim.
+# One list, two kinds of row: live sessions first (most recently used at the
+# top), then zoxide directories that don't have a session yet. Enter switches to
+# a session or creates one for a directory; Ctrl-X kills the highlighted session
+# without leaving the picker. So the same popup both switches and prunes.
+#
+# Candidate directories come from zoxide rather than a hardcoded project list,
+# so the ranking follows where you actually work -- the same source as the
+# <leader>fp picker in nvim.
 #
 # Bound to Ctrl-f in bash (outside tmux) and prefix+f inside tmux.
+#
+# Rows are three tab-separated fields: kind, key, display. fzf shows only the
+# display field (--with-nth=3) but can still hand {1}/{2} to --preview and
+# --bind, which is how the preview and the kill binding know what they're
+# looking at. Tabs, not spaces, so a session name containing a space survives.
 
 set -uo pipefail
 
+# Re-invoking ourselves for --preview/--rows/--kill needs a path that works from
+# inside fzf. `command -v` resolves a bare name through PATH; $0 is already a
+# path when the script was called with one.
+SELF=$(command -v -- "$0" 2>/dev/null || printf '%s' "$0")
+T=$'\t'
+
+# tmux treats '.' and ':' as separators in target names, so they can't appear in
+# a session name.
+session_name_for() { basename "$1" | tr '.:' '__'; }
+
+rows() {
+    local sessions line dir name
+
+    # session_last_attached is a unix timestamp -- sort on it, then drop it, to
+    # get most-recently-used-first ordering tmux won't give us directly.
+    sessions=$(tmux list-sessions \
+        -F "#{session_last_attached}${T}#{session_name}${T}#{?session_attached,*,·} #{session_name}  (#{session_windows}w)" \
+        2>/dev/null | sort -rn -t"$T" -k1,1 | cut -d"$T" -f2-)
+
+    local -A live=()
+    while IFS= read -r line; do
+        [[ -z $line ]] && continue
+        live[${line%%"$T"*}]=1
+    done <<<"$sessions"
+
+    [[ -n $sessions ]] && sed "s/^/session${T}/" <<<"$sessions"
+
+    # Directories that already have a session are dropped -- otherwise every
+    # project you're working in shows up twice.
+    while IFS= read -r dir; do
+        [[ -z $dir ]] && continue
+        name=$(session_name_for "$dir")
+        [[ -n ${live[$name]:-} ]] && continue
+        printf 'dir%s%s%s%s\n' "$T" "$dir" "$T" "  ${dir/#$HOME/\~}"
+    done < <(zoxide query -l 2>/dev/null)
+}
+
+case ${1:-} in
+--rows)
+    rows
+    exit 0
+    ;;
+--preview)
+    case ${2:-} in
+    session) tmux list-windows -t "=${3:-}" \
+        -F '#{window_index}: #{window_name}#{?window_active, ←,}' 2>/dev/null ;;
+    dir) ls -A --color=always -- "${3:-}" 2>/dev/null | head -60 ;;
+    esac
+    exit 0
+    ;;
+--kill)
+    # `-t=` is an exact match; a prefix match would kill the wrong session.
+    tmux kill-session -t="${2:-}" 2>/dev/null
+    exit 0
+    ;;
+esac
+
 if [[ $# -eq 1 ]]; then
-    selected=$1
+    # Direct-path mode, kept for calling the script with a directory argument.
+    kind=dir key=$1
 else
-    selected=$(zoxide query -l | fzf \
+    selected=$(rows | fzf \
+        --ansi \
+        --delimiter="$T" \
+        --with-nth=3 \
         --prompt='session> ' \
+        --header='enter: switch/create   ctrl-x: kill session' \
         --reverse \
         --border \
-        --height=100%) || exit 0
+        --height=100% \
+        --preview="$SELF --preview {1} {2}" \
+        --preview-window='right,50%,border-left' \
+        --bind="ctrl-x:execute-silent($SELF --kill {2})+reload($SELF --rows)") || exit 0
+
+    [[ -z ${selected:-} ]] && exit 0
+    kind=$(cut -d"$T" -f1 <<<"$selected")
+    key=$(cut -d"$T" -f2 <<<"$selected")
 fi
 
-[[ -z ${selected:-} ]] && exit 0
-[[ -d $selected ]] || { echo "tmux-sessionizer: no such directory: $selected" >&2; exit 1; }
-
-# tmux treats '.' and ':' as separators in target names, so they can't appear
-# in a session name.
-name=$(basename "$selected" | tr '.:' '__')
-
-# -t= is an exact match; without it a prefix match would wrongly report a hit.
-if ! tmux has-session -t="$name" 2>/dev/null; then
-    tmux new-session -ds "$name" -c "$selected"
-fi
+case $kind in
+session)
+    name=$key
+    ;;
+dir)
+    [[ -d $key ]] || {
+        echo "tmux-sessionizer: no such directory: $key" >&2
+        exit 1
+    }
+    name=$(session_name_for "$key")
+    tmux has-session -t="$name" 2>/dev/null || tmux new-session -ds "$name" -c "$key"
+    ;;
+*)
+    exit 0
+    ;;
+esac
 
 if [[ -z ${TMUX:-} ]]; then
-    tmux attach -t "$name"
+    tmux attach -t "=$name"
 else
-    tmux switch-client -t "$name"
+    tmux switch-client -t "=$name"
 fi

@@ -2,7 +2,7 @@
 -- the end of hypr/hyprland.lua, so it wins over hypr/input.lua.
 -- Copied into ~/.local/state/omarchy/toggles/hypr/ by hypr/bin/game-mode.
 hl.config({
-  input = {
-    repeat_rate = 25,
-  },
+	input = {
+		repeat_rate = 40,
+	},
 })

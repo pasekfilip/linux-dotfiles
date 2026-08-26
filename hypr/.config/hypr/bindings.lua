@@ -6,17 +6,23 @@
 require("default.hypr.bindings.media")
 
 -- Applications
-o.bind("ALT + RETURN", "Terminal", 'uwsm-app -- xdg-terminal-exec --dir="$(omarchy-cmd-terminal-cwd)"')
+-- Omarchy's own terminal-tmux runs `bash -c "tmux attach || tmux new -s Work"`.
+-- Detaching (prefix d) makes `tmux attach` exit 0, bash has nothing left to run,
+-- and the window closes with it -- the session survives, but the tab vanishing
+-- on every detach is jarring. Two changes:
+--   `new -A -s Work`  attach if it exists, create if not, in one command, so no
+--                     exit status decides anything.
+--   `exec bash`       after detaching you land in a plain shell in the same
+--                     window: re-attach, or close it yourself.
+o.bind("ALT + RETURN", "Terminal", "omarchy-launch-terminal bash -c 'tmux new -A -s Work; exec bash'")
 o.bind("ALT + E", "File manager", { launch = "nautilus --new-window" })
 o.bind("ALT + B", "Browser", "omarchy-launch-browser")
 o.bind("ALT + M", "Music", { launch = "spotify" })
 
-o.bind("ALT + T", "Activity", "uwsm-app -- ghostty --class=org.omarchy.btop --font-size=9 -e btop --preset 1")
-o.bind("ALT + SLASH", "Passwords", { launch = "1password" })
+o.bind("ALT + T", "Activity", "uwsm-app -- ghostty --class=org.omarchy.btop --font-size=12 -e btop --preset 1")
+o.bind("ALT + SHIFT + W", "Toggle weather", "omarchy-notification-weather")
 
-o.bind("ALT + A", "AI Studio", { webapp = "https://aistudio.google.com/" })
 o.bind("ALT + Y", "YouTube", { webapp = "https://youtube.com/" })
-o.bind("ALT + SHIFT + G", "WhatsApp", { webapp = "https://web.whatsapp.com/" })
 
 -- Windows
 o.bind("ALT + W", "Close active window", hl.dsp.window.close())
@@ -41,9 +47,6 @@ for workspace = 1, 10 do
 	)
 end
 
--- Move the active window with ALT + SHIFT + hjkl. Unlike swapping, this moves
--- the window into that spot and falls through to the neighbouring monitor when
--- nothing is there (relies on binds:window_direction_monitor_fallback).
 o.bind("ALT + SHIFT + H", "Move window to the left", hl.dsp.window.move({ direction = "l" }))
 o.bind("ALT + SHIFT + L", "Move window to the right", hl.dsp.window.move({ direction = "r" }))
 o.bind("ALT + SHIFT + K", "Move window up", hl.dsp.window.move({ direction = "u" }))
@@ -67,21 +70,18 @@ o.bind("SUPER + S", "Toggle game mode", "~/.config/hypr/bin/game-mode")
 -- Menus
 o.bind("ALT + D", "Launch apps", "omarchy-menu toggle apps")
 o.bind("ALT + O", "Omarchy menu", "omarchy-menu toggle")
-o.bind("ALT + ESCAPE", "Power menu", "omarchy-menu toggle system")
--- o.bind("ALT + K", "Show key bindings", "omarchy-menu-keybindings")
+-- o.bind("ALT , "Power menu", "omarchy-menu toggle system")
+o.bind("ALT + ESCAPE", "Show key bindings", "omarchy-menu-keybindings")
 
 -- Aesthetics
-o.bind_toggle("ALT + SHIFT + T", "Toggle top bar", "bar")
-o.bind("ALT + CTRL + SPACE", "Next background in theme", "omarchy-theme-bg-next")
-o.bind("ALT + SHIFT + CTRL + SPACE", "Pick new theme", "omarchy-menu toggle theme")
+-- o.bind_toggle("ALT + SHIFT + T", "Toggle top bar", "bar")
+o.bind("ALT + SHIFT + B", "Next background in theme", "omarchy-theme-bg-next")
+o.bind("ALT + SHIFT + T", "Pick new theme", "omarchy-menu toggle theme")
 
 -- Notifications (xkbcommon names the key "comma"; upper-case "COMMA" won't match)
 o.bind("ALT + comma", "Dismiss last notification", "omarchy-shell notifications dismissOne")
 o.bind("ALT + SHIFT + comma", "Dismiss all notifications", "omarchy-shell notifications dismissAll")
 o.bind_toggle("ALT + CTRL + comma", "Toggle silencing notifications", "notification-silencing")
-
--- Toggle idling
--- o.bind_toggle("ALT + SHIFT + L", "Toggle locking on idle", "idle")
 
 -- Brightness
 o.bind_toggle("ALT + CTRL + N", "Toggle nightlight", "nightlight")
