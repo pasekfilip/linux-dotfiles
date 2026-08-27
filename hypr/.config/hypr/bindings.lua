@@ -5,16 +5,8 @@
 -- Keep Omarchy's volume / brightness / media / touchpad keys.
 require("default.hypr.bindings.media")
 
--- Applications
--- Omarchy's own terminal-tmux runs `bash -c "tmux attach || tmux new -s Work"`.
--- Detaching (prefix d) makes `tmux attach` exit 0, bash has nothing left to run,
--- and the window closes with it -- the session survives, but the tab vanishing
--- on every detach is jarring. Two changes:
---   `new -A -s Work`  attach if it exists, create if not, in one command, so no
---                     exit status decides anything.
---   `exec bash`       after detaching you land in a plain shell in the same
---                     window: re-attach, or close it yourself.
-o.bind("ALT + RETURN", "Terminal", "omarchy-launch-terminal bash -c 'tmux new -A -s Work; exec bash'")
+o.bind("ALT + RETURN", "Terminal", { omarchy = "terminal" })
+o.bind("ALT + SHIFT + RETURN", "Terminal", "omarchy-launch-terminal bash -c 'tmux new -A -s Work; exec bash'")
 o.bind("ALT + E", "File manager", { launch = "nautilus --new-window" })
 o.bind("ALT + B", "Browser", "omarchy-launch-browser")
 o.bind("ALT + M", "Music", { launch = "spotify" })
