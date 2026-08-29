@@ -31,7 +31,6 @@
 #           alias | declare -F | shopt | bind -p | grep -i <key>
 # =============================================================================
 
-
 # -----------------------------------------------------------------------------
 # Environment — every shell, interactive or not
 # -----------------------------------------------------------------------------
@@ -54,7 +53,6 @@ case ":$PATH:" in
 *) export PATH="$PATH:$HOME/.lmstudio/bin" ;;
 esac
 
-
 # -----------------------------------------------------------------------------
 # Interactive gate
 # -----------------------------------------------------------------------------
@@ -67,7 +65,6 @@ esac
 # was set above. A script that genuinely wants those functions should source the
 # chain itself:  source "$OMARCHY_PATH/default/bash/rc"
 [[ $- != *i* ]] && return
-
 
 # -----------------------------------------------------------------------------
 # Omarchy defaults
@@ -99,11 +96,11 @@ esac
 # later wins, and `type -a <name>` shows which definition is live.
 source "$OMARCHY_PATH/default/bash/rc"
 
-
 # -----------------------------------------------------------------------------
 # My aliases
 # -----------------------------------------------------------------------------
-alias lsg='ls -lg'   # `ls` is eza here, so: long listing + group column
+alias cx='printf "\033[2J\033[3J\033[H" && claude'
+alias lsg='ls -lg' # `ls` is eza here, so: long listing + group column
 alias vi='nvim'
 alias ctl='systemctl'
 
@@ -122,7 +119,6 @@ alias pchat='pi --system-prompt " " --tools web_search,web_fetch'
 
 # A greeting in every new shell. Off: tmux opens a lot of them.
 # fastfetch
-
 
 # -----------------------------------------------------------------------------
 # Keys and terminal modes
