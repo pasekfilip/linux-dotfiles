@@ -106,13 +106,11 @@ return {
 			vim.diagnostic.open_float(nil, { scope = "line", focus = true })
 		end, { desc = "Show line diagnostics" })
 
-		-- Set your Java path
-		local java_exec = "/usr/lib/jvm/default-runtime/bin/java"
+		local mason = vim.fn.stdpath("data") .. "/mason"
 
 		-- java-debug-adapter bundle (installed via Mason or auto-installed in debug.lua)
 		local debug_jar = vim.fn.glob(
-			vim.fn.stdpath("data")
-				.. "/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
+			mason .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
 			true
 		)
 		local bundles = {}
@@ -120,93 +118,69 @@ return {
 			table.insert(bundles, debug_jar)
 		end
 
-		-- Find the JAR file installed by Mason
-		local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
-		local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
-		local config_dir = jdtls_path .. "/config_linux" -- use config_linux / config_mac if needed
-
-		local function java_root(fname)
-			-- Prefer the repository / build root for multi-module projects so JDTLS
-			-- imports sibling modules into the same workspace. Falling back directly to
-			-- pom.xml/build.gradle would often start JDTLS inside just one submodule.
-			local multi_module_root = vim.fs.root(fname, {
-				"mvnw",
-				"gradlew",
-				"settings.gradle",
-				"settings.gradle.kts",
-				".git",
-			})
-			local single_module_root = vim.fs.root(fname, {
-				"pom.xml",
-				"build.gradle",
-				"build.gradle.kts",
-				"build.xml",
-			})
-
-			return multi_module_root or single_module_root or vim.fn.getcwd()
-		end
+		-- What used to be hand-rolled here -- locating the equinox launcher and
+		-- config_linux, naming a workspace per project root, and a root_dir preferring the
+		-- reactor over a submodule -- is exactly what lspconfig's own lsp/jdtls.lua does,
+		-- using the same markers in the same order. It runs mason's `jdtls` wrapper, which
+		-- also supplies the eclipse -D flags, --add-modules=ALL-SYSTEM and both
+		-- --add-opens pairs. The one thing neither can guess is JVM tuning, read from this
+		-- env var: each space-separated token becomes one --jvm-arg=, so every flag must
+		-- be a single token (hence `--add-opens=a=b` form, if you ever add one).
+		vim.env.PATH = mason .. "/bin:" .. vim.env.PATH
+		vim.env.JDTLS_JVM_ARGS = table.concat({
+			"-javaagent:" .. mason .. "/packages/jdtls/lombok.jar",
+			"-Xmx4g",
+			"-XX:+UseG1GC",
+			"-XX:+UseStringDeduplication",
+			"-Dlog.level=ERROR",
+		}, " ")
 
 		vim.lsp.config("jdtls", {
 			init_options = {
 				bundles = bundles, -- enables vscode.java.startDebugSession command
+				-- jdtls will not answer a definition request with a class-file location
+				-- unless the client says it can render one -- it returns an empty result
+				-- instead of a jdt:// URI. lspconfig never advertises this (its
+				-- init_options is `{}`), which is why `gd` did nothing on anything from a
+				-- jar while project sources jumped fine. The BufReadCmd below is the other
+				-- half: it fetches the content the URI points at.
+				extendedClientCapabilities = {
+					classFileContentsSupport = true,
+				},
 			},
-			-- In Nvim 0.12, a function-valued `cmd` must start and return the RPC client.
-			-- Returning only the argv table makes client.rpc a plain table, which causes
-			-- `attempt to call field 'request' (a nil value)` during initialize.
-			cmd = function(dispatchers, config)
-				local root = config.root_dir or java_root(0)
-				-- basename of the root, not fnamemodify(":p:t"): ":p" appends a trailing
-				-- slash for directories, so ":t" returns "" and every project ends up
-				-- sharing one Eclipse workspace -- reference search then spans all of them.
-				local ws_name = vim.fs.basename((root:gsub("/+$", "")))
-				local ws_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. ws_name
-
-				local cmd = {
-					java_exec,
-					"-javaagent:" .. jdtls_path .. "/lombok.jar",
-					"-Declipse.application=org.eclipse.jdt.ls.core.id1",
-					"-Dosgi.bundles.defaultStartLevel=4",
-					"-Declipse.product=org.eclipse.jdt.ls.core.product",
-					"-Dlog.level=ERROR",
-					"-Xmx4g",
-					"-XX:+UseG1GC",
-					"-XX:+UseStringDeduplication",
-					"--add-modules=ALL-SYSTEM",
-					"--add-opens",
-					"java.base/java.util=ALL-UNNAMED",
-					"--add-opens",
-					"java.base/java.lang=ALL-UNNAMED",
-					"-jar",
-					launcher_jar,
-					"-configuration",
-					config_dir,
-					"-data",
-					ws_dir,
-				}
-
-				return vim.lsp.rpc.start(cmd, dispatchers, {
-					cwd = config.cmd_cwd,
-					env = config.cmd_env,
-					detached = config.detached,
-				})
-			end,
-			root_dir = function(bufnr, on_dir)
-				on_dir(java_root(vim.api.nvim_buf_get_name(bufnr)))
-			end,
-			filetypes = { "java" },
 			settings = {
 				java = {
 					autobuild = {
-						enabled = true, -- Avoid constant rebuilds
+						-- Eclipse runs an incremental build on every buffer change when this
+						-- is on, which pegs the JVM while you're just moving around the file.
+						-- Off means cross-file diagnostics refresh on save instead.
+						enabled = false,
 					},
 					references = {
 						includeAccessors = true, -- Important for DTOs!
-						includeDecompiledSources = false, -- searching 328 JAR indexes per gR
+						-- Was false to stop `gR` scanning every JAR index. The hidden cost was
+						-- that `gd` did nothing at all on a type from a jar: with no source
+						-- attached and decompiling off, there is no document to open. Measured
+						-- with a definition request -- ArrayList and StringUtils both returned
+						-- no result, while a project class resolved fine.
+						includeDecompiledSources = true,
 					},
-					-- Set to 'automatic' instead of 'interactive'
-					-- This ensures that when you change a DTO, the index updates immediately
+					-- 'automatic' re-imports the whole Maven/Gradle model on any pom or
+					-- build-file change, which is a multi-second full-CPU stall. 'interactive'
+					-- prompts instead; accept it (or :LspRestart) after editing a pom.
 					configuration = {
-						updateBuildConfiguration = "automatic",
+						updateBuildConfiguration = "interactive",
+						-- Without this the only VM Eclipse knows about is the one jdtls itself
+						-- runs on (default-runtime -> 21). This project targets 11, so the
+						-- JavaSE-11 execution environment in every module's .classpath had no
+						-- matching install and therefore no source attachment: java.* types
+						-- resolved via ct.sym (hence no errors) but `gd` had nowhere to go.
+						-- Each of these ships its own lib/src.zip.
+						runtimes = {
+							{ name = "JavaSE-11", path = "/usr/lib/jvm/java-11-amazon-corretto" },
+							{ name = "JavaSE-17", path = "/usr/lib/jvm/java-17-amazon-corretto" },
+							{ name = "JavaSE-21", path = "/usr/lib/jvm/java-21-amazon-corretto", default = true },
+						},
 					},
 					format = { enabled = true },
 					saveActions = { organizeImports = true },
@@ -214,6 +188,30 @@ return {
 			},
 		})
 		vim.lsp.enable("jdtls")
+
+		-- Second half of classFileContentsSupport. jdtls now answers `gd` on a library
+		-- type with a `jdt://` URI, but nvim has no idea how to read that scheme, so the
+		-- jump would land in an empty buffer. jdtls serves the attached source (or a
+		-- decompilation, when no sources jar exists) through this custom request.
+		vim.api.nvim_create_autocmd("BufReadCmd", {
+			group = vim.api.nvim_create_augroup("JdtlsClassFile", { clear = true }),
+			pattern = "jdt://*",
+			callback = function(ev)
+				local client = vim.lsp.get_clients({ name = "jdtls" })[1]
+				if not client then
+					return
+				end
+				local res = client:request_sync("java/classFileContents", { uri = ev.match }, 5000, ev.buf)
+				local text = (res and not res.err and res.result) or "// jdtls returned no content"
+
+				vim.bo[ev.buf].modifiable = true
+				vim.api.nvim_buf_set_lines(ev.buf, 0, -1, false, vim.split(text, "\n", { plain = true }))
+				vim.bo[ev.buf].filetype = "java"
+				vim.bo[ev.buf].buftype = "nofile"
+				vim.bo[ev.buf].modifiable = false
+				vim.bo[ev.buf].modified = false
+			end,
+		})
 
 		-- Find the project root directory.
 		-- This looks upwards from the current file for a '.git' directory or an 'angular.json' file.

@@ -30,8 +30,6 @@ return {
 				auto_show = true,
 			},
 
-			-- ADDED: Border for the main completion menu
-			-- UPDATED: Added window.border to documentation
 			documentation = {
 				auto_show = true,
 				auto_show_delay_ms = 500,
@@ -61,7 +59,6 @@ return {
 			},
 		},
 
-		-- UPDATED: Added window.border to signature help
 		signature = {
 			enabled = true,
 		},
