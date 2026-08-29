@@ -47,9 +47,6 @@ set("n", "<C-down>", function()
 end)
 
 set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search with esc" })
-
-set("n", "<C-a>", "ggVG", { desc = "select all everything inside current file" })
-
 set("t", "<Esc>", "<C-\\><C-n>", { desc = "Go into the normal mode in terminal mode" })
 
 set("v", "J", ":m '>+1<CR>gv=gv")
