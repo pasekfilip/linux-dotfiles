@@ -17,6 +17,14 @@ return {
 			preset = "default",
 			["<C-l>"] = { "snippet_forward", "fallback" },
 			["<C-h>"] = { "snippet_backward", "fallback" },
+			["<C-n>"] = {
+				function(cmp)
+					if cmp.is_active() then
+						return cmp.select_next()
+					end
+				end,
+				"show",
+			},
 		},
 
 		snippets = { preset = "luasnip" },
@@ -27,7 +35,7 @@ return {
 
 		completion = {
 			menu = {
-				auto_show = true,
+				auto_show = false,
 			},
 
 			documentation = {
@@ -46,8 +54,8 @@ return {
 		sources = {
 			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
-				sql = { "snippets", "dadbod", "buffer" },
-				mysql = { "snippets", "dadbod", "buffer" },
+				sql = { "dadbod", "buffer" },
+				mysql = { "dadbod", "buffer" },
 				txt = { "buffer" },
 			},
 			providers = {
