@@ -55,31 +55,15 @@ return {
 				end, opts)
 
 				opts.desc = "Show documentation for what is under cursor"
-				keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
+				keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
 				opts.desc = "Show signature help"
-				keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts) -- show documentation for what is under cursor
-
-				-- opts.desc = "Restart LSP"
-				-- keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
-
-				if client and client.server_capabilities.documentFormattingProvider then
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
-						buffer = buf,
-						callback = function()
-							vim.lsp.buf.format({ bufnr = buf })
-						end,
-					})
-				end
+				keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts)
 			end,
 		})
 
 		vim.diagnostic.config({
 			underline = true,
-			-- No inline/virtual rendering: nothing shifts the buffer text around.
-			-- Diagnostics show as gutter signs; the message is a float you ask for
-			-- with <leader>ld (or that follows [d / ]d).
 			virtual_text = false,
 			virtual_lines = false,
 			signs = {
@@ -101,7 +85,6 @@ return {
 			},
 		})
 
-		-- On demand only, focusable so the popup can be scrolled / yanked from.
 		keymap.set("n", "<leader>ld", function()
 			vim.diagnostic.open_float(nil, { scope = "line", focus = true })
 		end, { desc = "Show line diagnostics" })
