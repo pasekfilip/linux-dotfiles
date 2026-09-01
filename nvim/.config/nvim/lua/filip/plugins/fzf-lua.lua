@@ -24,10 +24,6 @@ return {
 		{
 			"<leader>fp",
 			function()
-				-- if vim.env.TMUX then
-				-- 	vim.fn.system("tmux display-popup -E tmux-sessionizer")
-				-- 	return
-				-- end
 				local list = vim.fn.systemlist("zoxide query -l")
 				vim.ui.select(list, {}, function(choice)
 					if not choice then
@@ -56,7 +52,6 @@ return {
 			},
 		})
 
-		-- What dressing.nvim was doing.
 		fzf.register_ui_select()
 	end,
 }
