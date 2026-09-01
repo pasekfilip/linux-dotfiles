@@ -10,7 +10,7 @@ return {
 		},
 		config = function()
 			require("diffview").setup({
-				enhanced_diff_hl = true, -- Better syntax highlighting in diffs
+				enhanced_diff_hl = true,
 				view = {
 					merge_tool = {
 						layout = "diff3_mixed",
