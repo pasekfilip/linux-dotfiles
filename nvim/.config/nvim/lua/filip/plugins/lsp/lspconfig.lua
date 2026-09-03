@@ -57,6 +57,9 @@ return {
 				opts.desc = "Show documentation for what is under cursor"
 				keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
+				opts.desc = "User lsp formatter"
+				keymap.set("n", "<leader>lf", vim.lsp.buf.format, opts)
+
 				opts.desc = "Show signature help"
 				keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts)
 			end,
