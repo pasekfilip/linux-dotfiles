@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# Harpoon-style session slots for tmux.
+#
+# A short, hand-picked list of sessions on Ctrl+Shift+1..5, with the slot
+# numbers drawn in status-left and colored by what the Claude agent in each
+# session is doing. The list is a tab-separated tmux *server* option, so it
+# lives and dies with the server and leaves nothing on disk.
+#
+#   prefix + a      pin the current session (fills the first hole, else appends)
+#   prefix + A      unpin it
+#   prefix + 1..5   pin the current session into that exact slot
+#   prefix + e      edit the list in $EDITOR, one session per line
+#   C-S-1..5        jump to a slot
+#
+# Slot colors read the same @agent option tmux-agent-flag sets from the Claude
+# Code hooks -- see window-status-format in tmux.conf for the per-window version.
+set -uo pipefail
+
+T=$'\t'
+OPT=@harpoon
+
+# Load the list into SLOTS. An unset option means an empty list; the guard is
+# needed because `tr` on an empty string still emits one (empty) line.
+slots() {
+    local raw
+    raw=$(tmux show -gqv "$OPT")
+    SLOTS=()
+    [[ -z $raw ]] && return 0
+    mapfile -t SLOTS < <(tr "$T" '\n' <<<"$raw")
+}
+
+# Trailing empties are dropped, so unpinning the last slot removes its number
+# rather than leaving a dot. Interior empties are KEPT on purpose: renumbering
+# the slots behind a hole is what makes a harpoon list untrustworthy -- slot 3
+# must stay slot 3 when 2 goes away.
+save() {
+    local -a s=("$@")
+    while ((${#s[@]})) && [[ -z ${s[-1]} ]]; do unset 's[-1]'; done
+    local IFS=$T
+    tmux set -g "$OPT" "${s[*]}"
+    tmux refresh-client -S
+}
+
+cur() { tmux display-message -p '#S'; }
+
+case ${1:-status} in
+add)
+    slots
+    c=$(cur)
+    for s in ${SLOTS[@]+"${SLOTS[@]}"}; do
+        [[ $s == "$c" ]] && {
+            tmux display-message "harpoon: $c already pinned"
+            exit 0
+        }
+    done
+    for i in "${!SLOTS[@]}"; do
+        [[ -z ${SLOTS[i]} ]] && {
+            SLOTS[i]=$c
+            save "${SLOTS[@]}"
+            exit 0
+        }
+    done
+    save ${SLOTS[@]+"${SLOTS[@]}"} "$c"
+    ;;
+rm)
+    slots
+    c=$(cur)
+    for i in "${!SLOTS[@]}"; do
+        [[ ${SLOTS[i]} == "$c" ]] && SLOTS[i]=
+    done
+    save ${SLOTS[@]+"${SLOTS[@]}"}
+    ;;
+set)
+    n=${2:?usage: tmux-harpoon set <slot>}
+    slots
+    c=$(cur)
+    # Pad up to n so the slot exists. The ${x[i]-} default is what keeps this
+    # legal under `set -u` for elements the array never had.
+    for ((i = 0; i < n; i++)); do SLOTS[i]=${SLOTS[i]-}; done
+    SLOTS[n - 1]=$c
+    save "${SLOTS[@]}"
+    ;;
+go)
+    n=${2:?usage: tmux-harpoon go <slot>}
+    slots
+    name=${SLOTS[n - 1]-}
+    [[ -z $name ]] && {
+        tmux display-message "harpoon: slot $n is empty"
+        exit 0
+    }
+    # The list stores names, so a renamed or killed session leaves a dead slot.
+    # Say so instead of silently doing nothing.
+    tmux has-session -t="$name" 2>/dev/null || {
+        tmux display-message "harpoon: no session '$name' (slot $n)"
+        exit 0
+    }
+    tmux switch-client -t "=$name"
+    ;;
+edit)
+    slots
+    f=$(mktemp) || exit 1
+    trap 'rm -f "$f"' EXIT
+    ((${#SLOTS[@]})) && printf '%s\n' "${SLOTS[@]}" >"$f"
+    "${EDITOR:-nvim}" "$f" || exit 0
+    # Blank lines survive as empty slots, so the file is the literal slot list:
+    # delete a line to renumber, blank it to leave a hole.
+    mapfile -t SLOTS <"$f"
+    save ${SLOTS[@]+"${SLOTS[@]}"}
+    ;;
+status)
+    # $2 is the asking session's name, handed in by the status-left format.
+    # The script has no client of its own, and with two clients attached
+    # `display-message -p '#S'` would answer for whichever one tmux picks.
+    here=${2:-}
+    slots
+    ((${#SLOTS[@]})) || exit 0
+
+    # One `list-windows -a` for the whole server, not has-session plus
+    # list-windows per slot: the bar re-runs this every second or two during
+    # redraws, and nine tmux round-trips at that rate is silly. A session with
+    # no windows cannot exist, so appearing here at all is the liveness test.
+    declare -A agents=()
+    while IFS=$T read -r sname astate; do
+        [[ -z $sname ]] && continue
+        agents[$sname]="${agents[$sname]-} $astate"
+    done < <(tmux list-windows -a -F "#{session_name}${T}#{@agent}" 2>/dev/null)
+
+    out=
+    for i in "${!SLOTS[@]}"; do
+        name=${SLOTS[i]}
+        n=$((i + 1))
+        if [[ -z $name ]]; then
+            out+="#[fg=brightblack]·#[default] "
+            continue
+        fi
+        if [[ $name == "$here" ]]; then
+            # Where you already are wins over the agent color -- the per-window
+            # flags in the same bar already show that session's agents.
+            c="blue,bold"
+        elif [[ -z ${agents[$name]+x} ]]; then
+            c="brightblack"
+        else
+            case ${agents[$name]} in
+            *blocked*) c=red ;;
+            *done*) c=green ;;
+            *working*) c=yellow ;;
+            *) c=default ;;
+            esac
+        fi
+        out+="#[fg=$c]$n#[default] "
+    done
+    printf '%s' "$out"
+    ;;
+*)
+    echo "usage: tmux-harpoon add|rm|set N|go N|edit|status [session]" >&2
+    exit 2
+    ;;
+esac
