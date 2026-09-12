@@ -58,10 +58,8 @@ return {
 		local dapview = require("dap-view")
 
 		dapview.setup({
-			auto_toggle = true, -- open on launch/attach, close when the session ends
+			auto_toggle = true,
 			winbar = {
-				-- Adding "console" merges the terminal into the main window instead
-				-- of giving it its own split
 				sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
 			},
 			virtual_text = {
@@ -117,6 +115,34 @@ return {
 				stopOnEntry = false,
 				-- If you need to pass arguments;
 				-- args = {"--fullscreen"},
+			},
+		}
+
+		dap.configurations.asm = {
+			{
+				name = "Launch file",
+				type = "codelldb",
+				request = "launch",
+				program = function()
+					local cwd = vim.fn.getcwd()
+					local obj = vim.fn.system("nasm -f elf64 -g -F dwarf " .. cwd .. "/main.asm -o " .. cwd .. "/main.o")
+
+					if vim.v.shell_error ~= 0 then
+						vim.notify("Assembly failed:\n" .. obj)
+						return nil
+					end
+
+					local link = vim.fn.system("ld " .. cwd .. "/main.o -o " .. cwd .. "/main")
+
+					if vim.v.shell_error ~= 0 then
+						vim.notify("Linking failed:\n" .. link)
+						return nil
+					end
+
+					return cwd .. "/main"
+				end,
+				cwd = "${workspaceFolder}",
+				stopOnEntry = true,
 			},
 		}
 
