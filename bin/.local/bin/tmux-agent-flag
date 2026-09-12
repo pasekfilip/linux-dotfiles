@@ -5,10 +5,10 @@
 # that is the only reason this can find the right window. Same trick herdr uses
 # with HERDR_PANE_ID, and the state names come from the events herdr registers:
 #
-#   UserPromptSubmit, PreToolUse  -> working   quiet flag
-#   PermissionRequest, Notification -> blocked  flag + critical popup
-#   Stop, SubagentStop            -> done      flag + popup
-#   SessionEnd                    -> clear
+#   UserPromptSubmit                -> working   quiet flag
+#   PermissionRequest, Notification -> blocked   flag + critical popup
+#   Stop                            -> done      flag + popup
+#   SessionEnd                      -> clear
 #
 # The flag is drawn by window-status-format in tmux.conf and cleared by the
 # after-select-window hook, i.e. the moment you actually go look at the window.
@@ -20,16 +20,39 @@ state=${1:?usage: tmux-agent-flag working|blocked|done|clear}
 win=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}' 2>/dev/null) || exit 0
 [[ -n $win ]] || exit 0
 
-# Nothing to report about the window you are already looking at -- Stop fires at
-# the end of every single turn, so without this you get a notification while you
-# sit and watch the agent work.
-if [[ $state == clear ]] ||
-    [[ $(tmux display-message -p -t "$TMUX_PANE" '#{window_active}') == 1 ]]; then
+# You are watching this agent only if it is the current tmux window *and* the
+# terminal drawing it holds the compositor focus. window_active on its own says
+# "yes, he's here" while you are away in a browser -- which is precisely when
+# the popup is worth having. Find the terminal by walking up from the tmux
+# client to the pid Hyprland says is focused; no hyprctl (ssh, tty) falls back
+# to the old window_active-only answer.
+watching() {
+    [[ $(tmux display-message -p -t "$TMUX_PANE" '#{window_active}') == 1 ]] || return 1
+    local top pid
+    top=$(hyprctl activewindow -j 2>/dev/null | sed -n 's/.*"pid": *\([0-9]*\).*/\1/p')
+    [[ -n $top ]] || return 0
+    pid=$(tmux display-message -p -t "$TMUX_PANE" '#{client_pid}')
+    while [[ ${pid:-0} -gt 1 ]]; do
+        [[ $pid == "$top" ]] && return 0
+        pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+    done
+    return 1
+}
+
+if [[ $state == clear ]] || watching; then
     tmux set-option -t "$win" -uw @agent
     exit 0
 fi
 
+prev=$(tmux show-options -qvw -t "$win" @agent)
 tmux set-option -t "$win" -w @agent "$state"
+
+# Only the *transition* into a state is news. Stop fires at the end of every
+# turn and Claude re-fires the idle Notification on a timer, so without this
+# one walk away earns you a popup every couple of minutes. A 'blocked' landing
+# on a window already flagged 'done' is that idle nag -- you were told once.
+[[ $state == "$prev" ]] && exit 0
+[[ $state == blocked && $prev == done ]] && exit 0
 
 # -r with a fixed id replaces the previous popup instead of stacking a queue;
 # -a claude lets the notification daemon target these with its own rules.

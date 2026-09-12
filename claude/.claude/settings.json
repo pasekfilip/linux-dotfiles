@@ -43,16 +43,6 @@
         ]
       }
     ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tmux-agent-flag done"
-          }
-        ]
-      }
-    ],
     "SessionEnd": [
       {
         "hooks": [
