@@ -68,7 +68,37 @@ return {
 			},
 		})
 
+		local java_debug_settings = vim.json.encode({
+			logLevel = "WARNING",
+			showToString = false,
+			showLogicalStructure = true,
+			showStaticVariables = false,
+			showQualifiedNames = false,
+			maxStringLength = 500,
+		})
+
+		local function maven_project_name()
+			local pom = vim.fs.find("pom.xml", { upward = true, path = vim.fn.expand("%:p:h") })[1]
+
+			if not pom then
+				return nil
+			end
+
+			local xml = table.concat(vim.fn.readfile(pom), "\n"):gsub("<parent>.-</parent>", "")
+
+			return xml:match("<artifactId>%s*(.-)%s*</artifactId>")
+		end
+
 		dap.adapters.java = function(callback)
+			vim.lsp.buf_request(0, "workspace/executeCommand", {
+				command = "vscode.java.updateDebugSettings",
+				arguments = { java_debug_settings },
+			}, function(err)
+				if err then
+					vim.notify("java debug settings: " .. vim.inspect(err), vim.log.levels.WARN)
+				end
+			end)
+
 			vim.lsp.buf_request(0, "workspace/executeCommand", {
 				command = "vscode.java.startDebugSession",
 			}, function(err, port)
@@ -84,6 +114,24 @@ return {
 				name = "Attach → Tomcat 9 (localhost:5005)",
 				hostName = "127.0.0.1",
 				port = 5005,
+				projectName = maven_project_name,
+				stepFilters = {
+					skipSynthetics = true,
+					skipStaticInitializers = true,
+					skipConstructors = true,
+					classNameFilters = {
+						"java.*",
+						"javax.*",
+						"jdk.*",
+						"sun.*",
+						"org.springframework.*",
+						"org.apache.*",
+						"org.hibernate.*",
+						"com.sun.proxy.*",
+						"*$$EnhancerBySpringCGLIB*",
+						"*$$FastClassBySpringCGLIB*",
+					},
+				},
 			},
 		}
 
