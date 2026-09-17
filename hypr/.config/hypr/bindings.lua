@@ -13,6 +13,7 @@ o.bind("ALT + M", "Music", { launch = "spotify" })
 
 o.bind("ALT + T", "Activity", "uwsm-app -- ghostty --class=org.omarchy.btop --font-size=12 -e btop --preset 1")
 o.bind("ALT + SHIFT + W", "Toggle weather", "omarchy-notification-weather")
+o.bind("ALT + SHIFT + B", "Bluetooth", "omarchy-shell shell toggle omarchy.bluetooth")
 
 o.bind("ALT + Y", "YouTube", { webapp = "https://youtube.com/" })
 
