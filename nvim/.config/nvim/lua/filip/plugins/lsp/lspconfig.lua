@@ -104,14 +104,6 @@ return {
 			table.insert(bundles, debug_jar)
 		end
 
-		-- What used to be hand-rolled here -- locating the equinox launcher and
-		-- config_linux, naming a workspace per project root, and a root_dir preferring the
-		-- reactor over a submodule -- is exactly what lspconfig's own lsp/jdtls.lua does,
-		-- using the same markers in the same order. It runs mason's `jdtls` wrapper, which
-		-- also supplies the eclipse -D flags, --add-modules=ALL-SYSTEM and both
-		-- --add-opens pairs. The one thing neither can guess is JVM tuning, read from this
-		-- env var: each space-separated token becomes one --jvm-arg=, so every flag must
-		-- be a single token (hence `--add-opens=a=b` form, if you ever add one).
 		vim.env.PATH = mason .. "/bin:" .. vim.env.PATH
 		vim.env.JDTLS_JVM_ARGS = table.concat({
 			"-javaagent:" .. mason .. "/packages/jdtls/lombok.jar",
@@ -123,13 +115,7 @@ return {
 
 		vim.lsp.config("jdtls", {
 			init_options = {
-				bundles = bundles, -- enables vscode.java.startDebugSession command
-				-- jdtls will not answer a definition request with a class-file location
-				-- unless the client says it can render one -- it returns an empty result
-				-- instead of a jdt:// URI. lspconfig never advertises this (its
-				-- init_options is `{}`), which is why `gd` did nothing on anything from a
-				-- jar while project sources jumped fine. The BufReadCmd below is the other
-				-- half: it fetches the content the URI points at.
+				bundles = bundles,
 				extendedClientCapabilities = {
 					classFileContentsSupport = true,
 				},
@@ -137,31 +123,14 @@ return {
 			settings = {
 				java = {
 					autobuild = {
-						-- Eclipse runs an incremental build on every buffer change when this
-						-- is on, which pegs the JVM while you're just moving around the file.
-						-- Off means cross-file diagnostics refresh on save instead.
 						enabled = false,
 					},
 					references = {
-						includeAccessors = true, -- Important for DTOs!
-						-- Was false to stop `gR` scanning every JAR index. The hidden cost was
-						-- that `gd` did nothing at all on a type from a jar: with no source
-						-- attached and decompiling off, there is no document to open. Measured
-						-- with a definition request -- ArrayList and StringUtils both returned
-						-- no result, while a project class resolved fine.
+						includeAccessors = true,
 						includeDecompiledSources = true,
 					},
-					-- 'automatic' re-imports the whole Maven/Gradle model on any pom or
-					-- build-file change, which is a multi-second full-CPU stall. 'interactive'
-					-- prompts instead; accept it (or :LspRestart) after editing a pom.
 					configuration = {
 						updateBuildConfiguration = "interactive",
-						-- Without this the only VM Eclipse knows about is the one jdtls itself
-						-- runs on (default-runtime -> 21). This project targets 11, so the
-						-- JavaSE-11 execution environment in every module's .classpath had no
-						-- matching install and therefore no source attachment: java.* types
-						-- resolved via ct.sym (hence no errors) but `gd` had nowhere to go.
-						-- Each of these ships its own lib/src.zip.
 						runtimes = {
 							{ name = "JavaSE-11", path = "/usr/lib/jvm/java-11-amazon-corretto" },
 							{ name = "JavaSE-17", path = "/usr/lib/jvm/java-17-amazon-corretto" },
