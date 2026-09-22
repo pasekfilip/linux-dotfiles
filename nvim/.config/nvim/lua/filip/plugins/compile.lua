@@ -23,22 +23,6 @@ return {
 		-- compile-mode so mvn's `[ERROR] File.java:[row,col]` lines are jumpable
 		-- and <leader>cr re-runs the whole thing. The relative WAR path means cwd
 		-- must be the repo root, same as the old <leader>jb.
-		{
-			"<leader>cd",
-			function()
-				local war = "/usr/share/tomcat9/webapps/api.war"
-				require("compile-mode").compile({
-					args = table.concat({
-						-- -B: batch mode, so no ANSI codes or download-progress
-						-- spam in a buffer that isn't a terminal.
-						"mvn -B clean package -DskipTests",
-						"rm -f " .. war,
-						"install -m644 -g tomcat9 SignoSoftServer/target/SignoSoftServer.war " .. war,
-					}, " && "),
-				})
-			end,
-			desc = "Build WAR & deploy to Tomcat",
-		},
 	},
 	init = function()
 		---@module "compile-mode"
@@ -48,7 +32,7 @@ return {
 				["*"] = "make -k ",
 				c = "cc -o %:r % && ./%:r",
 				cpp = "cmake --build build && ./build/main",
-				java = "mvn -q compile",
+				java = "mvn -q package",
 				lua = "lua %",
 				odin = "odin run .",
 				python = "python %",
