@@ -196,18 +196,23 @@ return {
 
 		dap.configurations.odin = {
 			{
-				name = "Launch file",
+				name = "Launch package",
 				type = "codelldb",
 				request = "launch",
 				program = function()
-					local result = vim.fn.system("odin build . -debug -out:render_buzz")
+					local dir = vim.fn.input("Odin package: ", vim.fn.expand("%:.:h"), "dir")
+					if dir == "" then return dap.ABORT end
+
+					dir = vim.fn.fnamemodify(dir, ":p:h")
+					local out = dir .. "/" .. vim.fs.basename(dir)
+					local result = vim.fn.system({ "odin", "build", dir, "-debug", "-out:" .. out })
 
 					if vim.v.shell_error ~= 0 then
-						vim.notify("Compilation failed:\n" .. result)
-						return nil
+						vim.notify("Compilation failed:\n" .. result, vim.log.levels.ERROR)
+						return dap.ABORT
 					end
 
-					return vim.fn.getcwd() .. "/render_buzz"
+					return out
 				end,
 				cwd = "${workspaceFolder}",
 				stopOnEntry = false,
