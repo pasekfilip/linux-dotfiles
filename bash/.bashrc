@@ -116,6 +116,7 @@ alias orun='ollama run qwen3.5:9b-q8_0'
 alias pns='pi --no-session'
 alias pro='pi --tools read,grep,find,ls,web_fetch,web_search'
 alias pchat='pi --system-prompt " " --tools web_search,web_fetch'
+alias rdoc='QT_QPA_PLATFORM=xcb qrenderdoc'
 
 # A greeting in every new shell. Off: tmux opens a lot of them.
 # fastfetch
