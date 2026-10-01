@@ -21,6 +21,7 @@ return {
 		{ "<leader>fc", "<cmd>FzfLua grep_cword<cr>", desc = "Find string under cursor in cwd" },
 		{ "<leader>fh", "<cmd>FzfLua helptags<cr>", desc = "Find help tags" },
 		{ "<leader>ft", "<cmd>TodoFzfLua<cr>", desc = "Find todos" },
+		{ "<leader>fo", "<cmd>FzfLua treesitter<cr>", desc = "Fuzzy syntax tree" },
 		{
 			"<leader>fp",
 			function()
