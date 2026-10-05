@@ -130,7 +130,7 @@ return {
 						includeDecompiledSources = true,
 					},
 					configuration = {
-						updateBuildConfiguration = "interactive",
+						updateBuildConfiguration = "automatic",
 						runtimes = {
 							{ name = "JavaSE-11", path = "/usr/lib/jvm/java-11-amazon-corretto" },
 							{ name = "JavaSE-21", path = "/usr/lib/jvm/java-21-amazon-corretto", default = true },
