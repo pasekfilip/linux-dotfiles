@@ -4,9 +4,9 @@ stow
 ghostty
 fcitx5-mozc
 syncthing
-odin
 discord
 spotify
 ttf-cascadia-mono-nerd
 dmidecode
 rocm-smi-lib
+rnote
