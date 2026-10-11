@@ -13,7 +13,7 @@ window-padding-x = 4
 window-padding-y = 4,0
 confirm-close-surface = false
 resize-overlay = never
-mouse-scroll-multiplier = 0.95
+mouse-scroll-multiplier = precision:0.95,discrete:2
 
 # Cursor
 cursor-style = block
