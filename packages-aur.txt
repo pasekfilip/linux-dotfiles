@@ -1,3 +1,4 @@
 # AUR-only packages (install.sh → omarchy pkg aur add).
 ventoy-bin
 protonup-qt-bin
+opentabletdriver
