@@ -1,0 +1,2 @@
+# AUR-only packages (install.sh → omarchy pkg aur add).
+ventoy-bin

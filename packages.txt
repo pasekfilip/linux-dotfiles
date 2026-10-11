@@ -1,0 +1,12 @@
+# Explicit installs on top of Omarchy's own package set (install.sh → omarchy pkg add).
+# Regenerate candidates: comm -23 <(pacman -Qqe | sort) <(cat /usr/share/omarchy/install/omarchy-*.packages | grep -v '^#' | sort -u)
+stow
+ghostty
+fcitx5-mozc
+syncthing
+odin
+discord
+spotify
+ttf-cascadia-mono-nerd
+dmidecode
+rocm-smi-lib

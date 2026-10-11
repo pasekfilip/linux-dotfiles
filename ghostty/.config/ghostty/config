@@ -1,7 +1,10 @@
 config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 
 # Font
-font-family = "CaskaydiaMono Nerd Font"
+# `monospace` resolves through fontconfig, so this follows `omarchy font set`.
+# Keep it unquoted: font set seds `font-family = ".*"`, and sed -i would turn
+# this symlink back into a plain file.
+font-family = monospace
 font-size = 20
 
 # Window
