@@ -8,3 +8,8 @@ hl.env("EDITOR", "nvim")
 -- hl.env("XMODIFIERS", "@im=fcitx")
 -- hl.env("INPUT_METHOD", "fcitx")
 -- hl.env("SDL_IM_MODULE", "fcitx")
+
+-- Run Proton games on Wine's native Wayland driver instead of XWayland, so they
+-- fullscreen on the monitor Hyprland gives them. Opt a game out with the Steam
+-- launch option: PROTON_ENABLE_WAYLAND=0 %command%
+hl.env("PROTON_ENABLE_WAYLAND", "1")

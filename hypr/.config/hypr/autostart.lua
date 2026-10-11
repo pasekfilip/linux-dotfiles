@@ -1,5 +1,4 @@
 -- Extra autostart processes.
-o.exec_on_start("xrandr --output DP-1 --primary")
 o.exec_on_start(o.launch("hyprsunset"))
 
 -- Omarchy's own clipboard plugin (SUPER + V) keeps history now, so the old
