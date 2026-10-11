@@ -1,0 +1,10 @@
+[Hotkey]
+# Repeated Super+Space presses cycle through the input methods
+EnumerateWithTriggerKeys=True
+
+[Hotkey/TriggerKeys]
+0=Super+space
+1=Zenkaku_Hankaku
+
+[Hotkey/EnumerateForwardKeys]
+0=Control+Shift+space
