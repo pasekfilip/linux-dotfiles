@@ -1,7 +1,8 @@
 {
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -66,5 +67,5 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
   "agentPushNotifEnabled": true,
-  "model": "opus[1m]"
+  "promptSuggestionEnabled": false
 }
