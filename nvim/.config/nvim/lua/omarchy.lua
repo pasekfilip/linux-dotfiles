@@ -4,10 +4,10 @@
 -- LazyVim/LazyVim and sets opts.colorscheme on it, so it can't be consumed
 -- from a plain lazy.nvim config. Instead this reads the theme name Omarchy
 -- writes to <state>/omarchy/current/theme.name and maps it to a colorscheme
--- declared in filip/plugins/theme.lua.
+-- declared in lua/plugins/theme.lua.
 --
 -- Themes with no neovim.lua get a colorscheme generated from their palette --
--- see filip/omarchy_palette.lua.
+-- see lua/omarchy_palette.lua.
 --
 -- To support another Omarchy theme: add its plugin to theme.lua (lazy = true)
 -- and add a row to MAP below. `plugin` is the name lazy.nvim knows it by,
@@ -15,7 +15,7 @@
 
 local M = {}
 
-local palette = require("filip.omarchy_palette")
+local palette = require("omarchy_palette")
 
 -- Omarchy 4 ("quattro") moved this out of ~/.config into XDG state.
 local STATE = vim.env.XDG_STATE_HOME or vim.fn.expand("~/.local/state")
@@ -26,6 +26,13 @@ local THEME_NAME = CURRENT .. "/theme.name"
 -- own colors.toml, so nvim still shows the colours the rest of the desktop is
 -- using instead of some unrelated theme's.
 local GENERATED = { colorscheme = "omarchy" }
+
+-- When set, every theme uses the generated colorscheme in Alabaster style
+-- (only comments, strings, constants and definitions coloured) instead of its
+-- MAP entry, so the colours still follow the theme but there are fewer of
+-- them. :OmarchyAlabaster flips it for the session.
+M.alabaster = true
+local ALABASTER = { colorscheme = "omarchy-alabaster" }
 
 -- Last resort, for when Omarchy isn't installed at all. Two of them so a light
 -- desktop doesn't land on a dark editor.
@@ -94,7 +101,7 @@ end
 --- Apply the colorscheme matching the active Omarchy theme.
 function M.apply()
 	local name = M.theme_name()
-	local entry = name and M.MAP[name]
+	local entry = M.alabaster and ALABASTER or (name and M.MAP[name])
 
 	local background = M.background()
 	if background then
@@ -167,6 +174,12 @@ function M.setup()
 		M.apply()
 		vim.notify("omarchy: " .. (M.theme_name() or "unknown") .. " -> " .. vim.g.colors_name)
 	end, { desc = "Re-apply the colorscheme for the current Omarchy theme" })
+
+	vim.api.nvim_create_user_command("OmarchyAlabaster", function()
+		M.alabaster = not M.alabaster
+		M.apply()
+		vim.notify("omarchy: " .. vim.g.colors_name)
+	end, { desc = "Toggle Alabaster-style syntax for the Omarchy colorscheme" })
 end
 
 return M

@@ -1,8 +1,8 @@
 -- Colorschemes for the Omarchy themes. Nothing here sets the colorscheme:
--- filip/omarchy.lua reads the active Omarchy theme and loads exactly one of
+-- lua/omarchy.lua reads the active Omarchy theme and loads exactly one of
 -- these. They are all lazy so the other ones cost nothing at startup.
 --
--- Adding a theme: add the plugin here and a row to M.MAP in filip/omarchy.lua.
+-- Adding a theme: add the plugin here and a row to M.MAP in lua/omarchy.lua.
 
 return {
 	{

@@ -1,5 +1,6 @@
 return {
 	"neovim/nvim-lspconfig",
+	enabled = vim.g.lsp, -- see init.lua
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
 		"saghen/blink.cmp",
@@ -69,14 +70,10 @@ return {
 			underline = true,
 			virtual_text = false,
 			virtual_lines = false,
-			signs = {
-				text = {
-					[vim.diagnostic.severity.ERROR] = "",
-					[vim.diagnostic.severity.WARN] = "",
-					[vim.diagnostic.severity.INFO] = "",
-					[vim.diagnostic.severity.HINT] = "󰠠",
-				},
-			},
+			-- The sign column is kept for DAP breakpoints only (signcolumn=auto
+			-- in plugin/options.lua); diagnostics show as underlines, in the
+			-- lualine counts, and via ]d / <leader>ld.
+			signs = false,
 			update_in_insert = false,
 			severity_sort = true,
 			float = {
@@ -92,55 +89,9 @@ return {
 			vim.diagnostic.open_float(nil, { scope = "line", focus = true })
 		end, { desc = "Show line diagnostics" })
 
-		local mason = vim.fn.stdpath("data") .. "/mason"
+		vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
 
-		-- java-debug-adapter bundle (installed via Mason or auto-installed in debug.lua)
-		local debug_jar = vim.fn.glob(
-			mason .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
-			true
-		)
-		local bundles = {}
-		if debug_jar ~= "" then
-			table.insert(bundles, debug_jar)
-		end
-
-		vim.env.PATH = mason .. "/bin:" .. vim.env.PATH
-		vim.env.JDTLS_JVM_ARGS = table.concat({
-			"-javaagent:" .. mason .. "/packages/jdtls/lombok.jar",
-			"-Xmx4g",
-			"-XX:+UseG1GC",
-			"-XX:+UseStringDeduplication",
-			"-Dlog.level=ERROR",
-		}, " ")
-
-		vim.lsp.config("jdtls", {
-			init_options = {
-				bundles = bundles,
-				extendedClientCapabilities = {
-					classFileContentsSupport = true,
-				},
-			},
-			settings = {
-				java = {
-					autobuild = {
-						enabled = false,
-					},
-					references = {
-						includeAccessors = true,
-						includeDecompiledSources = true,
-					},
-					configuration = {
-						updateBuildConfiguration = "automatic",
-						runtimes = {
-							{ name = "JavaSE-11", path = "/usr/lib/jvm/java-11-amazon-corretto" },
-							{ name = "JavaSE-21", path = "/usr/lib/jvm/java-21-amazon-corretto", default = true },
-						},
-					},
-					format = { enabled = true },
-					saveActions = { organizeImports = true },
-				},
-			},
-		})
+		-- Per-server settings are in after/lsp/<name>.lua.
 		vim.lsp.enable("jdtls")
 
 		-- Second half of classFileContentsSupport. jdtls now answers `gd` on a library
@@ -167,23 +118,6 @@ return {
 			end,
 		})
 
-		-- Find the project root directory.
-		-- This looks upwards from the current file for a '.git' directory or an 'angular.json' file.
-		local project_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1] or vim.fn.findcwd({ "nx.json" })
-		local ngserver_path = project_root .. "/node_modules/.bin/ngserver"
-		local node_modules_path = project_root .. "/node_modules"
-		vim.lsp.config("angularls", {
-			cmd = {
-				ngserver_path,
-				"--stdio",
-				"--tsProbeLocations",
-				node_modules_path,
-				"--ngProbeLocations",
-				node_modules_path,
-			},
-			-- filetypes = { "typescript", 'htmlangular' },
-			-- root_markers = { 'angular.json', 'project.json', 'package.json', '.git' },
-		})
 		vim.lsp.enable("angularls")
 	end,
 }

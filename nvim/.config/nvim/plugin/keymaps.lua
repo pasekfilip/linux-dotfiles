@@ -1,4 +1,4 @@
-vim.g.mapleader = " "
+-- mapleader is set in init.lua: it has to be in place before lazy.setup().
 local set = vim.keymap.set
 local del = vim.keymap.del
 local api = vim.api
@@ -64,7 +64,7 @@ set("x", "<", "<gv")
 set("x", "<leader>p", '"_dP', { desc = "When pasting over selected it sends it to the void register" })
 
 set("n", "<leader>i", function()
-	require("filip.task").toggle()
+	require("task").toggle()
 end)
 
 -- Copy Full File-Path
@@ -73,58 +73,6 @@ set("n", "<leader>yp", function()
 	vim.fn.setreg("+", path)
 	print("file:", path)
 end)
-
-set("n", "<leader>jb", function()
-	-- --- JAVA BUILD AND DEPLOY ---
-	if vim.bo.filetype == "java" then
-		-- NOTE: Assumes Tomcat was installed via a package manager like pacman
-		local tomcat_webapps_dir = "/usr/share/tomcat9/webapps/"
-		local source_war_path = "SignoSoftServer/target/SignoSoftServer.war"
-		local dest_war_path = tomcat_webapps_dir .. "api.war"
-
-		local build_cmd = string.format(
-			[[mvn clean package -DskipTests && rm -f %s && install -m644 -g tomcat9 %s %s]],
-			dest_war_path,
-			source_war_path,
-			dest_war_path
-		)
-		print("Running Linux Java build & deploy...")
-
-		local main_win = api.nvim_get_current_win()
-
-		-- 1. Create the split
-		vim.cmd("botright 10split")
-		local term_win = api.nvim_get_current_win()
-		local term_buf = api.nvim_create_buf(false, true)
-		api.nvim_win_set_buf(term_win, term_buf)
-
-		-- 2. Run the job inside the terminal buffer
-		vim.fn.jobstart(build_cmd, {
-			term = true, -- Enables terminal colors and behavior
-			on_exit = function(_, exit_code)
-				if exit_code == 0 then
-					-- SUCCESS: Close the terminal window automatically
-					if api.nvim_win_is_valid(term_win) then
-						api.nvim_win_close(term_win, true)
-					end
-					vim.notify("🚀 Build & Deploy Successful!", vim.log.levels.INFO)
-				else
-					-- FAILURE: Leave window open so you can read the error
-					vim.notify("❌ Build Failed! Check the terminal below.", vim.log.levels.ERROR)
-				end
-			end,
-		})
-		api.nvim_win_set_cursor(term_win, { vim.api.nvim_buf_line_count(term_buf), 0 })
-	end
-end, { noremap = true, silent = false }) -- Set silent=false to see the print messages
-
-api.nvim_create_autocmd("FileType", {
-	pattern = { "sql", "mysql", "pgsql", "plsql" },
-	callback = function()
-		vim.bo.commentstring = "-- %s"
-		set("v", "x", ":DB<CR>", { buffer = true, silent = true })
-	end,
-})
 
 -- very cool remap
 set("n", "j", function()

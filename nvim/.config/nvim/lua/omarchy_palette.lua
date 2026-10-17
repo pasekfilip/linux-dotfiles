@@ -1,7 +1,7 @@
 -- A colorscheme built out of the active Omarchy theme's colors.toml.
 --
 -- Most Omarchy themes name a real nvim colorscheme in their neovim.lua, and
--- filip/omarchy.lua maps those to the plugins in filip/plugins/theme.lua. A
+-- lua/omarchy.lua maps those to the plugins in lua/plugins/theme.lua. A
 -- few (last-horizon, lupine, ristretto's siblings...) ship no neovim.lua at
 -- all, so there is no upstream colorscheme to follow and they used to land on
 -- the tokyonight fallback -- which has nothing to do with the colours the rest
@@ -409,9 +409,127 @@ local function highlights(p)
 	}
 end
 
+--- Alabaster-style syntax (tonsky/sublime-scheme-alabaster), laid over
+--- highlights(). Only four roles get a colour -- comments, strings, constants
+--- and definitions -- and everything else is plain foreground, so what stands
+--- out is where things are declared and what literal data the code holds.
+--- Keywords, types, calls and operators are readable from syntax alone.
+--- UI, diagnostics and diffs are left as highlights() has them.
+local function alabaster(p)
+	local comment = { fg = p.yellow }
+	local string = { fg = p.green }
+	local constant = { fg = p.magenta }
+	local definition = { fg = p.blue }
+	local plain = { fg = p.fg }
+	local punct = { fg = p.fg_dark }
+
+	return {
+		-- Syntax (non-Tree-sitter filetypes)
+		Comment = comment,
+		SpecialComment = comment,
+		String = string,
+		Character = string,
+		SpecialChar = string,
+		Constant = constant,
+		Number = constant,
+		Boolean = constant,
+		Float = constant,
+		Function = definition,
+		Identifier = plain,
+		Statement = plain,
+		Conditional = plain,
+		Repeat = plain,
+		Label = plain,
+		Operator = plain,
+		Keyword = plain,
+		Exception = plain,
+		PreProc = plain,
+		Include = plain,
+		Define = plain,
+		Macro = plain,
+		PreCondit = plain,
+		Type = plain,
+		StorageClass = plain,
+		Structure = plain,
+		Typedef = plain,
+		Special = plain,
+		Tag = plain,
+		Delimiter = punct,
+
+		-- Tree-sitter. Captures fall back along their dots (@function.call ->
+		-- @function), so the use-site captures must be set explicitly or calls
+		-- would pick up the definition colour.
+		["@comment"] = comment,
+		["@string"] = string,
+		["@string.escape"] = string,
+		["@string.special"] = string,
+		["@string.special.url"] = { fg = p.green, underline = true },
+		["@character"] = string,
+		["@constant"] = constant,
+		["@constant.builtin"] = constant,
+		["@number"] = constant,
+		["@boolean"] = constant,
+		["@function"] = definition,
+		["@function.method"] = definition,
+		["@function.macro"] = definition,
+		["@constant.macro"] = definition,
+		["@type.definition"] = definition,
+		["@function.call"] = plain,
+		["@function.method.call"] = plain,
+		["@function.builtin"] = plain,
+		["@constructor"] = plain,
+		["@variable"] = plain,
+		["@variable.builtin"] = plain,
+		["@variable.parameter"] = plain,
+		["@variable.member"] = plain,
+		["@property"] = plain,
+		["@module"] = plain,
+		["@label"] = plain,
+		["@operator"] = plain,
+		["@keyword"] = plain,
+		["@keyword.return"] = plain,
+		["@keyword.import"] = plain,
+		["@keyword.exception"] = plain,
+		["@type"] = plain,
+		["@type.builtin"] = plain,
+		["@attribute"] = plain,
+		["@tag"] = plain,
+		["@tag.attribute"] = plain,
+		["@punctuation.delimiter"] = punct,
+		["@punctuation.bracket"] = punct,
+		["@punctuation.special"] = punct,
+
+		-- LSP semantic tokens outrank Tree-sitter, and nvim links
+		-- @lsp.type.function/method/macro to the definition captures for every
+		-- use. Clearing them lets Tree-sitter decide; the declaration modifier
+		-- puts the definition colour back where it belongs.
+		["@lsp.type.function"] = {},
+		["@lsp.type.method"] = {},
+		["@lsp.type.macro"] = {},
+		["@lsp.type.enumMember"] = constant,
+		["@lsp.typemod.function.declaration"] = definition,
+		["@lsp.typemod.method.declaration"] = definition,
+		["@lsp.typemod.macro.declaration"] = definition,
+		["@lsp.typemod.class.declaration"] = definition,
+		["@lsp.typemod.struct.declaration"] = definition,
+		["@lsp.typemod.enum.declaration"] = definition,
+		["@lsp.typemod.type.declaration"] = definition,
+		-- clangd marks inactive #if branches as comment tokens; dim them
+		-- instead of lighting them up like real comments. Scoped to C/C++:
+		-- lua_ls sends every real comment as a comment token too, and those
+		-- would flash from the comment colour to muted once the LSP attaches.
+		["@lsp.type.comment"] = {},
+		["@lsp.type.comment.c"] = { fg = p.muted },
+		["@lsp.type.comment.cpp"] = { fg = p.muted },
+	}
+end
+
 --- Apply the generated colorscheme. false when colors.toml can't be used, so
 --- the caller can fall back to a real colorscheme plugin.
-function M.load()
+---
+--- `style` "alabaster" swaps the syntax groups for alabaster(); anything else
+--- is the full-colour scheme.
+function M.load(style)
 	local p = M.palette()
 	if not p then
 		return false
@@ -428,9 +546,14 @@ function M.load()
 		vim.cmd("syntax reset")
 	end
 	vim.o.termguicolors = true
-	vim.g.colors_name = "omarchy"
+	vim.g.colors_name = style == "alabaster" and "omarchy-alabaster" or "omarchy"
 
-	for group, opts in pairs(highlights(p)) do
+	local groups = highlights(p)
+	if style == "alabaster" then
+		groups = vim.tbl_extend("force", groups, alabaster(p))
+	end
+
+	for group, opts in pairs(groups) do
 		vim.api.nvim_set_hl(0, group, opts)
 	end
 

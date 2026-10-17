@@ -1,5 +1,6 @@
 return {
 	"williamboman/mason-lspconfig.nvim",
+	enabled = vim.g.lsp, -- see init.lua
 	event = { "BufReadPre", "BufNewFile" },
 	opts = {
 		ensure_installed = {

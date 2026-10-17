@@ -34,8 +34,11 @@ return {
 				theme = "auto",
 			},
 			sections = {
+				-- Default minus 'diff': no added/changed/removed line counts.
+				lualine_b = { "branch", "diagnostics" },
 				lualine_x = {
-					get_lsp_name,
+					-- Server list only when LSP is on (vim.g.lsp, init.lua).
+					{ get_lsp_name, cond = function() return vim.g.lsp end },
 					{
 						function()
 							return os.date("%H:%M")

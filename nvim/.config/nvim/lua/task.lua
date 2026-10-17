@@ -9,8 +9,8 @@ local state = {
 }
 
 local list = {
-	{ name = "work", path = "/home/filip/work-notes/tasks.md" },
-	{ name = "home", path = "/home/filip/notes/tasks.md" },
+	{ name = "home", path = "/home/flip/notes/tasks.md" },
+	{ name = "work", path = "/home/flip/work-notes/tasks.md" },
 }
 
 local height = 20

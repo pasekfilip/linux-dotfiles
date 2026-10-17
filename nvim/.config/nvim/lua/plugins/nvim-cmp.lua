@@ -52,7 +52,8 @@ return {
 		},
 
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer" },
+			-- No "lsp" source while vim.g.lsp is off (see init.lua).
+			default = vim.g.lsp and { "lsp", "path", "snippets", "buffer" } or { "snippets", "buffer" },
 			per_filetype = {
 				sql = { "dadbod", "buffer" },
 				mysql = { "dadbod", "buffer" },

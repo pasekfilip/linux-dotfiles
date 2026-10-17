@@ -1,8 +1,5 @@
 local opt = vim.opt
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 -- Basic settings
 opt.number = true -- Line numbers
 opt.relativenumber = true -- Relative line numbers
@@ -28,7 +25,7 @@ opt.inccommand = "split" -- When doing /%s it opens split for preview
 
 -- Visual settings
 opt.termguicolors = true -- Enable 24-bit colors
-opt.signcolumn = "yes" -- Always show sign column
+opt.signcolumn = "auto" -- Only when there is a sign: just DAP breakpoints now
 -- opt.colorcolumn = "150"                    -- Show column at 100 characters
 opt.cmdheight = 1 -- Command line height
 opt.completeopt = "menuone,noinsert,noselect" -- Completion options
@@ -80,27 +77,3 @@ opt.foldmethod = "expr" -- Use expression for folding
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- Use treesitter for folding
 opt.foldlevel = 99 -- Start with all folds open
 vim.opt.fillchars = { fold = " " }
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-	desc = "Highlight when yanking (copying) text",
-	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufReadPost", {
-	pattern = "kulala://*",
-	callback = function()
-		vim.opt_local.buftype = "nofile"
-		vim.opt_local.bufhidden = "hide"
-		vim.opt_local.swapfile = false
-	end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*",
-	callback = function()
-		vim.opt.formatoptions = "jql"
-	end,
-})
