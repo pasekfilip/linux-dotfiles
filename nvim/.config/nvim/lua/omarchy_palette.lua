@@ -529,6 +529,13 @@ local function alabaster(p)
 		["@markup.link"] = { fg = p.fg, underline = true },
 		["@markup.link.url"] = { fg = p.muted, underline = true },
 		["@markup.raw"] = string,
+
+		-- oil links these to Comment to mean "dim", but Comment is the loud
+		-- yellow here, so hidden files ended up standing out the most.
+		OilHidden = { fg = p.muted },
+		OilEmpty = { fg = p.muted },
+		OilLinkTarget = { fg = p.muted },
+		OilTrashSourcePath = { fg = p.muted },
 	}
 end
 
