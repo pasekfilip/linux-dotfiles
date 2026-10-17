@@ -1,16 +1,12 @@
 -- mapleader is set in init.lua: it has to be in place before lazy.setup().
 local set = vim.keymap.set
-local del = vim.keymap.del
 local api = vim.api
-
-del("n", "<C-w>d")
-del("n", "<C-W><C-D>")
 
 set("n", "<C-s>", ":w<CR>", { desc = "Save file", noremap = true, silent = true })
 set("i", "<C-s>", "<cmd>:w<CR>", { desc = "Save file", noremap = true, silent = true })
 
--- window management
-set("n", "<C-w>", "<cmd>:q<CR>", { desc = "Close current window" })
+-- window management. <C-w> is left to vim: <C-w>o only this window (Emacs
+-- C-x 1), <C-w>c close this one (C-x 0), <C-w>w next window (C-x o).
 set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 set("n", "<C-h>", "<C-w>h")
