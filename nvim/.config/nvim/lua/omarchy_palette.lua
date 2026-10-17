@@ -521,6 +521,14 @@ local function alabaster(p)
 		["@lsp.type.comment"] = {},
 		["@lsp.type.comment.c"] = { fg = p.muted },
 		["@lsp.type.comment.cpp"] = { fg = p.muted },
+
+		-- Markdown: structure from weight, not hue. Headings bold foreground,
+		-- list markers like punctuation; inline code keeps the string colour.
+		["@markup.heading"] = { fg = p.fg_bright, bold = true },
+		["@markup.list"] = punct,
+		["@markup.link"] = { fg = p.fg, underline = true },
+		["@markup.link.url"] = { fg = p.muted, underline = true },
+		["@markup.raw"] = string,
 	}
 end
 
