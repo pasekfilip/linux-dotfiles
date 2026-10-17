@@ -1,6 +1,28 @@
 return {
 	{
-		"tpope/vim-fugitive",
+		-- Magit for nvim. Diffs are inline/unified only (no diffview), which
+		-- suits a zoomed-in terminal better than side-by-side. Every view opens
+		-- in the current window ("replace"); the defaults are tabs and vsplits.
+		-- In the status: <Tab> expand a file's diff, s/u stage/unstage,
+		-- c c commit, P p push, F p pull, ? for all keys, q to leave.
+		"NeogitOrg/neogit",
+		lazy = true,
+		dependencies = { "nvim-lua/plenary.nvim" },
+		cmd = "Neogit",
+		keys = {
+			{ "<leader>gs", "<cmd>Neogit<cr>", desc = "Git status (Neogit)" },
+			{ "<leader>gl", "<cmd>NeogitLog<cr>", desc = "Git log for the current file" },
+		},
+		opts = {
+			kind = "replace",
+			commit_editor = { kind = "replace" },
+			commit_select_view = { kind = "replace" },
+			commit_view = { kind = "replace" },
+			log_view = { kind = "replace" },
+			reflog_view = { kind = "replace" },
+			stash = { kind = "replace" },
+			refs_view = { kind = "replace" },
+		},
 	},
 	{
 		"kdheepak/lazygit.nvim",
