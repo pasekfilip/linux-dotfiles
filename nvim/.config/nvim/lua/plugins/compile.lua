@@ -52,8 +52,6 @@ return {
 			},
 			-- Expand %, %:r etc. like :! does.
 			bang_expansion = true,
-			-- blink.cmp otherwise eats <Tab> completion in the :Compile prompt.
-			input_word_completion = true,
 			-- Land on the first error instead of the end of the output.
 			auto_jump_to_first_error = true,
 			-- Fall back to :Compile when there's nothing to recompile yet.

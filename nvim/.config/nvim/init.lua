@@ -3,7 +3,6 @@
 --   plugin/      options, keymaps, autocmds, theme -- sourced at startup
 --   lua/plugins/ lazy.nvim specs, one file per concern
 --   lua/         modules the above require (omarchy, task, ...)
---   after/lsp/   per-server LSP settings (:h lsp-config-merge)
 --   ftplugin/    per-filetype settings
 --   colors/      the generated Omarchy colorschemes
 
@@ -14,12 +13,6 @@
 vim.g.mapleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-
--- Trying a no-LSP workflow: completion from buffers and snippets only, no
--- language servers. Set to true to bring back lspconfig, Mason, the LSP
--- completion source and the server list in lualine (all read this flag).
--- Java debugging (lua/plugins/dap.lua) needs jdtls, so it needs this on.
-vim.g.lsp = false
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
