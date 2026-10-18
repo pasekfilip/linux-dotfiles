@@ -18,8 +18,8 @@ opt.autoindent = true -- Copy indent from current line
 -- Native indent guides instead of indent-blankline: leading whitespace drawn
 -- as middle dots (Emacs whitespace-mode style), for tab-indented files (Odin)
 -- and 4-space ones alike. Coloured by the Whitespace group.
-opt.list = true
-opt.listchars = { tab = "··", leadmultispace = "····", trail = "-", nbsp = "+" }
+-- opt.list = true
+-- opt.listchars = { tab = "··", leadmultispace = "····", trail = "-", nbsp = "+" }
 -- opt.listchars = { tab = "┊ ", leadmultispace = "┊   ", trail = "-", nbsp = "+" }
 
 -- Search settings
