@@ -15,6 +15,12 @@ opt.softtabstop = 4 -- Soft tab stop
 opt.expandtab = true -- Use spaces instead of tabs
 opt.smartindent = true -- Smart auto-indenting
 opt.autoindent = true -- Copy indent from current line
+-- Native indent guides instead of indent-blankline: leading whitespace drawn
+-- as middle dots (Emacs whitespace-mode style), for tab-indented files (Odin)
+-- and 4-space ones alike. Coloured by the Whitespace group.
+opt.list = true
+opt.listchars = { tab = "··", leadmultispace = "····", trail = "-", nbsp = "+" }
+-- opt.listchars = { tab = "┊ ", leadmultispace = "┊   ", trail = "-", nbsp = "+" }
 
 -- Search settings
 opt.ignorecase = true -- Case insensitive search
@@ -63,10 +69,6 @@ opt.mouse = "a" -- Enable mouse support
 opt.clipboard:append("unnamedplus") -- Use system clipboard
 opt.modifiable = true -- Allow buffer modifications
 opt.wildmode = "longest:full,full" -- Command-line completion mode
-
--- :grep already defaults to `rg --vimgrep -uu` on 0.11+, but -uu means
--- --no-ignore --hidden, so it walks target/ and .git in the Java repos.
-opt.grepprg = "rg --vimgrep"
 
 -- Split behavior
 opt.splitbelow = true -- Horizontal splits go below
