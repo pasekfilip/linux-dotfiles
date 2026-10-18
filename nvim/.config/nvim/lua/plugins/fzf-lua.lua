@@ -46,7 +46,7 @@ return {
 			actions = {
 				files = {
 					[1] = true,
-					["ctrl-q"] = fzf.actions.file_sel_to_qf,
+					["ctrl-q"] = { fn = fzf.actions.file_sel_to_qf, prefix = "select-all" },
 					["ctrl-h"] = { fn = fzf.actions.toggle_hidden, reuse = true },
 				},
 			},
