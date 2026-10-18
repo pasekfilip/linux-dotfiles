@@ -498,6 +498,13 @@ local function alabaster(p)
 		["@punctuation.delimiter"] = punct,
 		["@punctuation.bracket"] = punct,
 		["@punctuation.special"] = punct,
+		-- Our own captures, from after/queries/<lang>/highlights.scm: names
+		-- at the point they are introduced. Uses stay @variable (plain).
+		-- Locals are plain (pure Alabaster). To try them coloured, use a hue
+		-- of their own (y9nika-style, e.g. p.orange), not a tint of fg: a
+		-- tinted fg is too close to fg to read reliably.
+		["@alabaster.definition"] = definition,
+		["@alabaster.local"] = plain,
 
 		-- LSP semantic tokens outrank Tree-sitter, and nvim links
 		-- @lsp.type.function/method/macro to the definition captures for every
