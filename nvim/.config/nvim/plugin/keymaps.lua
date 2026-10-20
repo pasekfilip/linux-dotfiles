@@ -70,26 +70,10 @@ set("n", "<leader>yp", function()
 	print("file:", path)
 end)
 
--- very cool remap
-set("n", "j", function()
-	local count = vim.v.count
-
-	if count == 0 then
-		return "gj"
-	else
-		return "j"
-	end
-end, { expr = true })
-
-set("n", "k", function()
-	local count = vim.v.count
-
-	if count == 0 then
-		return "gk"
-	else
-		return "k"
-	end
-end, { expr = true })
+-- if there is wrap it takes into account the wrap
+-- so it dosent skip the whole line but i dont have wrap on lol
+set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
+set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
 
 set("n", "<leader>u", function()
 	for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
