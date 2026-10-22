@@ -29,7 +29,7 @@ win=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}' 
 watching() {
     [[ $(tmux display-message -p -t "$TMUX_PANE" '#{window_active}') == 1 ]] || return 1
     local top pid
-    top=$(hyprctl activewindow -j 2>/dev/null | sed -n 's/.*"pid": *\([0-9]*\).*/\1/p')
+    top=$(timeout 1 hyprctl activewindow -j 2>/dev/null | sed -n 's/.*"pid": *\([0-9]*\).*/\1/p')
     [[ -n $top ]] || return 0
     pid=$(tmux display-message -p -t "$TMUX_PANE" '#{client_pid}')
     while [[ ${pid:-0} -gt 1 ]]; do
@@ -57,8 +57,8 @@ tmux set-option -t "$win" -w @agent "$state"
 # -r with a fixed id replaces the previous popup instead of stacking a queue;
 # -a claude lets the notification daemon target these with its own rules.
 case $state in
-blocked) notify-send -u critical -a claude -r 4242 "claude: needs you" "$win" ;;
-done) notify-send -a claude -r 4242 "claude: done" "$win" ;;
+blocked) timeout 2 notify-send -u critical -a claude -r 4242 "claude: needs you" "$win" ;;
+done) timeout 2 notify-send -a claude -r 4242 "claude: done" "$win" ;;
 esac
 
 exit 0   # never let a hook failure surface as a blocked tool call
