@@ -75,6 +75,12 @@ end)
 set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
 set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
 
+-- multicursor
+set("n", "<c-q>", function()
+    local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
+    vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
+    end , { desc = "clear mutlicursor"})
+
 set("n", "<leader>u", function()
 	for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
 		if vim.bo[api.nvim_win_get_buf(win)].filetype == "nvim-undotree" then
