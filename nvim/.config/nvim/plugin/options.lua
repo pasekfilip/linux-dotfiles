@@ -28,6 +28,7 @@ opt.smartcase = true -- Case sensitive if uppercase in search
 opt.hlsearch = true -- Don't highlight search results
 opt.incsearch = true -- Show matches as you type
 opt.inccommand = "split" -- When doing /%s it opens split for preview
+opt.grepprg = "rg --vimgrep" -- default adds -uu, which greps gitignored/hidden files too
 
 -- Visual settings
 opt.termguicolors = true -- Enable 24-bit colors
