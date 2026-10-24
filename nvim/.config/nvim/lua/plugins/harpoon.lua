@@ -2,7 +2,6 @@ return {
 	"ThePrimeagen/harpoon",
 	branch = "harpoon2",
 	event = "VeryLazy",
-	dependencies = { "nvim-lua/plenary.nvim" },
 	config = function()
 		local harpoon = require("harpoon")
 		local set = vim.keymap.set
@@ -29,7 +28,5 @@ return {
 				actions = { ["default"] = require("fzf-lua").actions.file_edit },
 			})
 		end
-
-		set("n", "<C-e>", function() toggle_fzf(harpoon:list()) end, { desc = "Open harpoon window" })
 	end,
 }
