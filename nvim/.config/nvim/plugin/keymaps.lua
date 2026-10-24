@@ -59,15 +59,6 @@ set("x", "<", "<gv")
 
 set("x", "<leader>p", '"_dP', { desc = "When pasting over selected it sends it to the void register" })
 
--- grep a word into an editable buffer, :w writes the edits back (Emacs wgrep)
-set("n", "<leader>r", function()
-	require("qfedit").grep()
-end, { desc = "Grep word into editable buffer" })
-
-set("n", "<leader>q", function()
-	require("qfedit").open()
-end, { desc = "Edit quickfix lines, :w writes them back" })
-
 set("n", "<leader>i", function()
 	require("task").toggle()
 end)
