@@ -8,10 +8,18 @@ return {
 		-- Recompile falls back to the prompt the first time (recompile_no_fail).
 		{ "<leader>m", "<cmd>botright 12Recompile<CR>", desc = "Recompile (or compile)" },
 		{ "<leader>M", "<cmd>botright 12Compile<CR>", desc = "Compile (prompt for command)" },
-		{ "]e", "<cmd>NextError<CR>", desc = "Next compile error" },
-		{ "[e", "<cmd>PrevError<CR>", desc = "Prev compile error" },
 	},
 	init = function()
+		-- Errors go into the quickfix list like Emacs' next-error, so ]q/[q walk
+		-- build errors and grep results alike. Only the plugin fires this event,
+		-- so the require is safe even though this is registered before it loads.
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "CompilationFinished",
+			callback = function()
+				require("compile-mode").send_to_qflist()
+			end,
+		})
+
 		---@module "compile-mode"
 		---@type CompileModeOpts
 		vim.g.compile_mode = {
