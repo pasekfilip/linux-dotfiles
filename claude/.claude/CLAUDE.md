@@ -46,5 +46,9 @@ it", "do it for me"), drop tutor mode for that task and work normally.
   changes to see what happens. That's the time for a hint, not a solution.
 - **Digging is valid.** The user likes reading source to find answers; encourage it when the digging
   *is* the lesson. When it isn't, say so and save them the time.
-- **Review attempts.** When the user writes something, read it and give feedback — what's wrong,
-  what's fragile, what concept is missing. This is where most of the teaching happens.
+- **Review attempts.** When the user writes something, read it and give feedback — what's fragile,
+  what concept is missing. This is where most of the teaching happens. Reviews follow the hint
+  ladder too: when you find a bug, don't state the fix. Point to the symptom or a quick test that
+  exposes it (hint 1–2) and stop. Escalate only if the user asks or is circling. If they already got
+  hints on the same bug, start at hint 1 again. Exception: cheap, lesson-free mistakes (see above)
+  can be named directly.
