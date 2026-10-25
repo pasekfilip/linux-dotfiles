@@ -2,12 +2,12 @@ return {
 	"ej-shafran/compile-mode.nvim",
 	version = "^5.0.0",
 	cmd = { "Compile", "Recompile", "NextError", "PrevError", "FirstError", "QuickfixErrors" },
-	-- Output goes in a 12-line strip along the bottom (`botright 12`). To get
+	-- Output goes in a 8-line strip along the bottom (`botright 8`). To get
 	-- rid of it: `q` inside it, or <C-w>o from the code (Emacs C-x 1).
 	keys = {
 		-- Recompile falls back to the prompt the first time (recompile_no_fail).
-		{ "<leader>m", "<cmd>botright 12Recompile<CR>", desc = "Recompile (or compile)" },
-		{ "<leader>M", "<cmd>botright 12Compile<CR>", desc = "Compile (prompt for command)" },
+		{ "<leader>m", "<cmd>botright 8Recompile<CR>", desc = "Recompile (or compile)" },
+		{ "<leader>M", "<cmd>botright 8Compile<CR>", desc = "Compile (prompt for command)" },
 	},
 	init = function()
 		-- Errors go into the quickfix list like Emacs' next-error, so ]q/[q walk
@@ -34,7 +34,7 @@ return {
 				sh = "sh %",
 			},
 			-- Odin reports `file(row:col) Error:`, which none of the built-in
-			-- matchers cover (`msft` is closest but demands a ` : error C1234:`
+			-- matchers cover (`msft` is closest but demands a ` : error C834:`
 			-- suffix), so errors would otherwise not be jumpable.
 			error_regexp_table = {
 				odin = {
