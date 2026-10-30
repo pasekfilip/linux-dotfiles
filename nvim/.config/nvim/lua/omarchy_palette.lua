@@ -374,7 +374,10 @@ local function alabaster(p)
 		["@string.special"] = string,
 		["@string.special.url"] = { fg = string.fg, underline = true },
 		["@character"] = string,
-		["@constant"] = constant,
+		-- Plain: without an LSP, @constant is a guess from spelling -- the stock
+		-- queries capture any ALL_CAPS identifier (and Odin's `.Enum` values).
+		-- Literals below keep the constant colour; those the parser knows.
+		["@constant"] = plain,
 		["@constant.builtin"] = constant,
 		["@number"] = constant,
 		["@boolean"] = constant,

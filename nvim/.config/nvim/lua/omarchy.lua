@@ -17,7 +17,7 @@ local THEME_NAME = CURRENT .. "/theme.name"
 --   "y9nika"     only declarations coloured, keywords muted below text
 --   "quiet"      dim comments, nothing else
 -- :OmarchyStyle switches it for the session.
-M.style = "quiet"
+M.style = "alabaster"
 M.STYLES = { "quiet", "alabaster", "y9nika" }
 
 --- Name of the active Omarchy theme, e.g. "vantablack". nil if unknown.
