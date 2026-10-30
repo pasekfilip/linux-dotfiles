@@ -3,7 +3,7 @@
 -- are coloured. See lua/omarchy_palette.lua.
 --
 -- Erroring out rather than returning quietly is what lets lua/omarchy.lua
--- notice this failed and fall back to a colorscheme plugin.
+-- notice this failed and say so.
 if not require("omarchy_palette").load("alabaster") then
 	error("omarchy-alabaster: no usable colors.toml for the active theme")
 end

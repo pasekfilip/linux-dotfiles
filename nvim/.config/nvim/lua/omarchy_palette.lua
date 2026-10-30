@@ -1,14 +1,7 @@
--- A colorscheme built out of the active Omarchy theme's colors.toml.
+-- A colorscheme built out of the active Omarchy theme's colors.toml, so nvim
+-- shows the same colours as the rest of the desktop. Every theme ships one.
 --
--- Most Omarchy themes name a real nvim colorscheme in their neovim.lua, and
--- lua/omarchy.lua maps those to the plugins in lua/plugins/theme.lua. A
--- few (last-horizon, lupine, ristretto's siblings...) ship no neovim.lua at
--- all, so there is no upstream colorscheme to follow and they used to land on
--- the tokyonight fallback -- which has nothing to do with the colours the rest
--- of the desktop is showing. Every theme does ship colors.toml, so for those
--- this generates a colorscheme from it instead.
---
--- Reached through colors/omarchy.lua so `:colorscheme omarchy` works and the
+-- Reached through colors/omarchy-<style>.lua so `:colorscheme` works and the
 -- ColorScheme event fires (lualine's "auto" theme rebuilds on it).
 
 local M = {}
@@ -164,6 +157,8 @@ function M.palette()
 	return p
 end
 
+--- Everything but syntax: editor UI, diffs, diagnostics and plugins. The
+--- styles below supply the syntax groups.
 local function highlights(p)
 	return {
 		-- Editor
@@ -228,45 +223,6 @@ local function highlights(p)
 		WinBar = { fg = p.fg_light, bg = p.bg },
 		WinBarNC = { fg = p.muted, bg = p.bg },
 
-		-- Syntax
-		Comment = { fg = p.muted, italic = true },
-		Constant = { fg = p.orange },
-		String = { fg = p.green },
-		Character = { fg = p.green },
-		Number = { fg = p.orange },
-		Boolean = { fg = p.orange },
-		Float = { fg = p.orange },
-		Identifier = { fg = p.fg },
-		Function = { fg = p.blue },
-		Statement = { fg = p.magenta },
-		Conditional = { fg = p.magenta },
-		Repeat = { fg = p.magenta },
-		Label = { fg = p.magenta },
-		Operator = { fg = p.cyan },
-		Keyword = { fg = p.magenta },
-		Exception = { fg = p.magenta },
-		PreProc = { fg = p.cyan },
-		Include = { fg = p.cyan },
-		Define = { fg = p.cyan },
-		Macro = { fg = p.cyan },
-		PreCondit = { fg = p.cyan },
-		Type = { fg = p.yellow },
-		StorageClass = { fg = p.yellow },
-		Structure = { fg = p.yellow },
-		Typedef = { fg = p.yellow },
-		Special = { fg = p.cyan },
-		SpecialChar = { fg = p.orange },
-		Tag = { fg = p.red },
-		Delimiter = { fg = p.fg_dark },
-		SpecialComment = { fg = p.muted, bold = true, italic = true },
-		Debug = { fg = p.red },
-		Underlined = { underline = true },
-		Bold = { bold = true },
-		Italic = { italic = true },
-		Ignore = { fg = p.muted },
-		Error = { fg = p.red },
-		Todo = { fg = p.bg, bg = p.yellow, bold = true },
-
 		-- Diffs
 		DiffAdd = { bg = blend(p.green, p.bg, 0.18) },
 		DiffChange = { bg = blend(p.blue, p.bg, 0.14) },
@@ -309,70 +265,6 @@ local function highlights(p)
 		LspSignatureActiveParameter = { fg = p.orange, bold = true },
 		LspCodeLens = { fg = p.muted, italic = true },
 
-		-- Tree-sitter
-		["@variable"] = { fg = p.fg },
-		["@variable.builtin"] = { fg = p.red },
-		["@variable.parameter"] = { fg = p.yellow },
-		["@variable.member"] = { fg = p.cyan },
-		["@constant"] = { fg = p.orange },
-		["@constant.builtin"] = { fg = p.orange },
-		["@constant.macro"] = { fg = p.cyan },
-		["@module"] = { fg = p.yellow },
-		["@label"] = { fg = p.magenta },
-		["@string"] = { fg = p.green },
-		["@string.escape"] = { fg = p.magenta },
-		["@string.special"] = { fg = p.cyan },
-		["@string.special.url"] = { fg = p.accent, underline = true },
-		["@character"] = { fg = p.green },
-		["@number"] = { fg = p.orange },
-		["@boolean"] = { fg = p.orange },
-		["@function"] = { fg = p.blue },
-		["@function.builtin"] = { fg = p.cyan },
-		["@function.macro"] = { fg = p.cyan },
-		["@constructor"] = { fg = p.yellow },
-		["@operator"] = { fg = p.cyan },
-		["@keyword"] = { fg = p.magenta },
-		["@keyword.return"] = { fg = p.magenta, italic = true },
-		["@keyword.import"] = { fg = p.cyan },
-		["@keyword.exception"] = { fg = p.magenta },
-		["@punctuation.delimiter"] = { fg = p.fg_dark },
-		["@punctuation.bracket"] = { fg = p.fg_dark },
-		["@punctuation.special"] = { fg = p.cyan },
-		["@comment"] = { link = "Comment" },
-		["@comment.todo"] = { fg = p.bg, bg = p.cyan, bold = true },
-		["@comment.note"] = { fg = p.bg, bg = p.blue, bold = true },
-		["@comment.warning"] = { fg = p.bg, bg = p.orange, bold = true },
-		["@comment.error"] = { fg = p.bg, bg = p.red, bold = true },
-		["@tag"] = { fg = p.red },
-		["@tag.attribute"] = { fg = p.orange },
-		["@tag.delimiter"] = { fg = p.fg_dark },
-		["@type"] = { fg = p.yellow },
-		["@type.builtin"] = { fg = blend(p.yellow, p.bg, 0.8) },
-		["@property"] = { fg = p.cyan },
-		["@attribute"] = { fg = p.cyan },
-		["@markup.heading"] = { fg = p.accent, bold = true },
-		["@markup.strong"] = { bold = true },
-		["@markup.italic"] = { italic = true },
-		["@markup.strikethrough"] = { strikethrough = true },
-		["@markup.underline"] = { underline = true },
-		["@markup.link"] = { fg = p.accent },
-		["@markup.link.url"] = { fg = p.accent, underline = true },
-		["@markup.raw"] = { fg = p.green },
-		["@markup.list"] = { fg = p.red },
-		["@markup.quote"] = { fg = p.muted, italic = true },
-		["@diff.plus"] = { fg = p.green },
-		["@diff.minus"] = { fg = p.red },
-		["@diff.delta"] = { fg = p.blue },
-		["@lsp.type.namespace"] = { link = "@module" },
-		["@lsp.type.parameter"] = { link = "@variable.parameter" },
-		["@lsp.type.property"] = { link = "@property" },
-		["@lsp.type.enumMember"] = { fg = p.orange },
-		["@lsp.type.enum"] = { link = "@type" },
-		["@lsp.type.interface"] = { link = "@type" },
-		["@lsp.type.class"] = { link = "@type" },
-		["@lsp.type.decorator"] = { link = "@attribute" },
-		["@lsp.type.macro"] = { link = "@function.macro" },
-
 		-- gitsigns
 		GitSignsAdd = { fg = p.green },
 		GitSignsChange = { fg = p.blue },
@@ -409,12 +301,14 @@ local function highlights(p)
 	}
 end
 
---- Alabaster-style syntax (tonsky/sublime-scheme-alabaster), laid over
---- highlights(). Only four roles get a colour -- comments, strings, constants
---- and definitions -- and everything else is plain foreground, so what stands
---- out is where things are declared and what literal data the code holds.
---- Keywords, types, calls and operators are readable from syntax alone.
---- UI, diagnostics and diffs are left as highlights() has them.
+--- Alabaster-style syntax (tonsky/sublime-scheme-alabaster). Only four roles
+--- get a colour -- comments, strings, constants and definitions -- and
+--- everything else is plain foreground, so what stands out is where things
+--- are declared and what literal data the code holds. Keywords, types, calls
+--- and operators are readable from syntax alone.
+---
+--- This is the complete set of syntax groups: `highlight clear` leaves nvim's
+--- own defaults on anything not set here, and those are full colour.
 local function alabaster(p)
 	local comment = { fg = p.yellow }
 	-- Themes pick green as a terminal accent, and some are neon. Pulling it
@@ -423,7 +317,10 @@ local function alabaster(p)
 	local constant = { fg = p.magenta }
 	local definition = { fg = p.blue }
 	local plain = { fg = p.fg }
-	local punct = { fg = p.fg_dark }
+	-- Not p.fg_dark: themes ship that as their comment grey, and on some
+	-- (everforest, white) it is barely above the background. A step down
+	-- from the text itself keeps punctuation quieter but always legible.
+	local punct = { fg = readable(blend(p.fg, p.bg, 0.65), p.bg, p.fg) }
 
 	return {
 		-- Syntax (non-Tree-sitter filetypes)
@@ -457,11 +354,21 @@ local function alabaster(p)
 		Special = plain,
 		Tag = plain,
 		Delimiter = punct,
+		Underlined = { underline = true },
+		Bold = { bold = true },
+		Italic = { italic = true },
+		Ignore = { fg = p.muted },
+		Error = { fg = p.red },
+		Todo = { fg = p.bg, bg = p.yellow, bold = true },
 
 		-- Tree-sitter. Captures fall back along their dots (@function.call ->
 		-- @function), so the use-site captures must be set explicitly or calls
 		-- would pick up the definition colour.
 		["@comment"] = comment,
+		["@comment.todo"] = { fg = p.bg, bg = p.cyan, bold = true },
+		["@comment.note"] = { fg = p.bg, bg = p.blue, bold = true },
+		["@comment.warning"] = { fg = p.bg, bg = p.orange, bold = true },
+		["@comment.error"] = { fg = p.bg, bg = p.red, bold = true },
 		["@string"] = string,
 		["@string.escape"] = string,
 		["@string.special"] = string,
@@ -489,7 +396,9 @@ local function alabaster(p)
 		["@label"] = plain,
 		["@operator"] = plain,
 		["@keyword"] = plain,
-		["@keyword.return"] = plain,
+		-- The one keyword that stands out: an exit is easy to miss in a long
+		-- function. Comment yellow, as y9nika does with its marker.
+		["@keyword.return"] = comment,
 		["@keyword.import"] = plain,
 		["@keyword.exception"] = plain,
 		["@type"] = plain,
@@ -497,6 +406,7 @@ local function alabaster(p)
 		["@attribute"] = plain,
 		["@tag"] = plain,
 		["@tag.attribute"] = plain,
+		["@tag.delimiter"] = punct,
 		["@punctuation.delimiter"] = punct,
 		["@punctuation.bracket"] = punct,
 		["@punctuation.special"] = punct,
@@ -538,6 +448,14 @@ local function alabaster(p)
 		["@markup.link"] = { fg = p.fg, underline = true },
 		["@markup.link.url"] = { fg = p.muted, underline = true },
 		["@markup.raw"] = string,
+		["@markup.strong"] = { bold = true },
+		["@markup.italic"] = { italic = true },
+		["@markup.strikethrough"] = { strikethrough = true },
+		["@markup.underline"] = { underline = true },
+		["@markup.quote"] = { fg = p.muted, italic = true },
+		["@diff.plus"] = { fg = p.green },
+		["@diff.minus"] = { fg = p.red },
+		["@diff.delta"] = { fg = p.blue },
 
 		-- oil links these to Comment to mean "dim", but Comment is the loud
 		-- yellow here, so hidden files ended up standing out the most.
@@ -548,109 +466,146 @@ local function alabaster(p)
 	}
 end
 
---- Jonathan Blow's stream colours (nickav/naysayer-theme.el), laid over
---- alabaster() and derived from the theme's palette rather than naysayer's own
---- hex. Keywords, builtins and definitions share the brightest ink, so the
---- skeleton of a long function and the names it introduces stand out together;
---- keywords are also bold, because many themes' fg is already near white and
---- brightness alone would not separate them. Comments are loud green (code is
---- meant to be read with them), strings cyan, constants and numbers a pale
---- cyan. Directives (#if) and builtin types (int, f32) count as keywords; user
---- types, locals, calls, uses and operators stay plain.
-local function gruber(p)
-	local ink = p.mode == "light" and "#000000" or "#ffffff"
-	local function pale(color)
-		return readable(blend(ink, color, 0.45), p.bg, p.fg_bright)
-	end
+--- y9nika-style syntax (y9san9/y9nika.nvim), laid over alabaster(). Only
+--- declarations are coloured: definitions (top-level names) in primary blue,
+--- locals in secondary green, comments in the yellow marker. Literals share
+--- the locals' green -- six base colours, not eight. Keywords, operators and
+--- punctuation are muted *below* the text, since they are the most obvious
+--- part of any program; `return` alone gets the marker, as an exit. No bold
+--- or italics anywhere: scanning is easier when weight never changes.
+local function y9nika(p)
+	local base = { fg = p.fg }
+	local declaration = { fg = p.blue }
+	-- Same softening as alabaster()'s strings, for the same neon greens.
+	local variable = { fg = readable(blend(p.green, p.fg_dark, 0.65), p.bg, p.fg_bright) }
+	local marker = { fg = p.yellow }
+	local muted = { fg = readable(blend(p.fg, p.bg, 0.65), p.bg, p.fg) }
 
-	local bright = blend(ink, p.fg_bright, 0.6)
-	local keyword = { fg = bright, bold = true }
-	local definition = { fg = bright }
-	local comment = { fg = p.green }
-	local string = { fg = p.cyan }
-	local constant = { fg = pale(p.cyan) }
+	return vim.tbl_extend("force", alabaster(p), {
+		-- Syntax (non-Tree-sitter filetypes)
+		Comment = marker,
+		SpecialComment = marker,
+		String = variable,
+		Character = variable,
+		SpecialChar = muted,
+		Number = variable,
+		Float = variable,
+		Boolean = variable,
+		Constant = base,
+		Function = declaration,
+		Statement = muted,
+		Conditional = muted,
+		Repeat = muted,
+		Label = muted,
+		Keyword = muted,
+		Exception = muted,
+		StorageClass = muted,
+		Structure = muted,
+		Typedef = muted,
+		Operator = muted,
+		Delimiter = muted,
+
+		-- Tree-sitter
+		["@comment"] = marker,
+		["@string"] = variable,
+		["@string.escape"] = muted,
+		["@string.special"] = variable,
+		["@string.special.url"] = { fg = variable.fg, underline = true },
+		["@character"] = variable,
+		["@number"] = variable,
+		["@boolean"] = variable,
+		["@constant"] = base,
+		["@constant.builtin"] = base,
+		["@keyword"] = muted,
+		["@keyword.import"] = muted,
+		["@keyword.exception"] = muted,
+		["@keyword.return"] = marker,
+		["@operator"] = muted,
+		["@punctuation.delimiter"] = muted,
+		["@punctuation.bracket"] = muted,
+		["@punctuation.special"] = muted,
+		["@markup.heading"] = declaration,
+		["@markup.raw"] = variable,
+		["@alabaster.definition"] = declaration,
+		["@alabaster.local"] = variable,
+
+		["@lsp.type.enumMember"] = base,
+	})
+end
+
+--- Nearly monochrome (after nvim's built-in `quiet`, as james-orcales/big_bang
+--- uses it), laid over alabaster(). Comments are dimmed into the background
+--- and strings are the one syntax colour, green. Everything else -- keywords, return, constants, numbers,
+--- definitions, punctuation -- is plain text, so whatever turns out to be
+--- missed while reading is what earns a colour back.
+local function quiet(p)
+	-- Not p.muted: some themes' is near the background. Like big_bang's #888
+	-- on #DFE0DC text: about half way down, never below the contrast floor.
+	local comment = { fg = readable(blend(p.fg, p.bg, 0.55), p.bg, p.fg) }
+	-- Same softening as alabaster()'s strings, for the same neon greens.
+	local string = { fg = readable(blend(p.green, p.fg_dark, 0.65), p.bg, p.fg_bright) }
 	local plain = { fg = p.fg }
 
 	return vim.tbl_extend("force", alabaster(p), {
 		-- Syntax (non-Tree-sitter filetypes)
 		Comment = comment,
 		SpecialComment = comment,
+		Todo = comment,
 		String = string,
 		Character = string,
 		SpecialChar = string,
-		Constant = constant,
-		Number = constant,
-		Boolean = constant,
-		Float = constant,
-		Function = definition,
-		Statement = keyword,
-		Conditional = keyword,
-		Repeat = keyword,
-		Label = keyword,
-		Keyword = keyword,
-		Exception = keyword,
-		PreProc = keyword,
-		Include = keyword,
-		Define = keyword,
-		Macro = keyword,
-		PreCondit = keyword,
-		Type = plain,
-		StorageClass = keyword,
-		Structure = keyword,
-		Typedef = keyword,
+		Constant = plain,
+		Number = plain,
+		Boolean = plain,
+		Float = plain,
+		Function = plain,
 		Delimiter = plain,
 
 		-- Tree-sitter
 		["@comment"] = comment,
+		["@comment.todo"] = comment,
+		["@comment.note"] = comment,
+		["@comment.warning"] = comment,
+		["@comment.error"] = comment,
 		["@string"] = string,
 		["@string.escape"] = string,
 		["@string.special"] = string,
-		["@string.special.url"] = { fg = p.cyan, underline = true },
+		["@string.special.url"] = { fg = string.fg, underline = true },
 		["@character"] = string,
-		["@constant"] = constant,
-		["@constant.builtin"] = constant,
-		["@number"] = constant,
-		["@boolean"] = constant,
-		["@function"] = definition,
-		["@function.method"] = definition,
-		["@function.macro"] = definition,
-		["@constant.macro"] = definition,
-		["@type.definition"] = definition,
-		["@function.builtin"] = definition,
-		["@variable.builtin"] = definition,
-		["@keyword"] = keyword,
-		["@keyword.return"] = keyword,
-		["@keyword.import"] = keyword,
-		["@keyword.exception"] = keyword,
-		["@keyword.directive"] = keyword,
-		["@type"] = plain,
-		["@type.builtin"] = keyword,
-		["@attribute"] = plain,
+		["@constant"] = plain,
+		["@constant.builtin"] = plain,
+		["@number"] = plain,
+		["@boolean"] = plain,
+		["@function"] = plain,
+		["@function.method"] = plain,
+		["@function.macro"] = plain,
+		["@constant.macro"] = plain,
+		["@type.definition"] = plain,
+		["@keyword.return"] = plain,
+		["@tag.delimiter"] = plain,
 		["@punctuation.delimiter"] = plain,
 		["@punctuation.bracket"] = plain,
 		["@punctuation.special"] = plain,
+		["@markup.list"] = plain,
 		["@markup.raw"] = string,
-		["@alabaster.definition"] = definition,
-		["@alabaster.local"] = plain,
+		["@alabaster.definition"] = plain,
 
-		["@lsp.type.enumMember"] = constant,
-		["@lsp.typemod.function.declaration"] = definition,
-		["@lsp.typemod.method.declaration"] = definition,
-		["@lsp.typemod.macro.declaration"] = definition,
-		["@lsp.typemod.class.declaration"] = definition,
-		["@lsp.typemod.struct.declaration"] = definition,
-		["@lsp.typemod.enum.declaration"] = definition,
-		["@lsp.typemod.type.declaration"] = definition,
+		["@lsp.type.enumMember"] = plain,
+		["@lsp.typemod.function.declaration"] = plain,
+		["@lsp.typemod.method.declaration"] = plain,
+		["@lsp.typemod.macro.declaration"] = plain,
+		["@lsp.typemod.class.declaration"] = plain,
+		["@lsp.typemod.struct.declaration"] = plain,
+		["@lsp.typemod.enum.declaration"] = plain,
+		["@lsp.typemod.type.declaration"] = plain,
 	})
 end
 
-local STYLES = { alabaster = alabaster, gruber = gruber }
+local STYLES = { alabaster = alabaster, y9nika = y9nika, quiet = quiet }
 
---- Apply the generated colorscheme. false when colors.toml can't be used, so
---- the caller can fall back to a real colorscheme plugin.
----
---- `style` "alabaster" or "gruber" swaps the syntax groups for that
---- function's; anything else is the full-colour scheme.
+--- Apply the generated colorscheme in `style` (a key of STYLES),
+--- whose function's syntax groups are laid over highlights(). false when
+--- colors.toml can't be used.
 function M.load(style)
 	local p = M.palette()
 	if not p then
@@ -668,13 +623,9 @@ function M.load(style)
 		vim.cmd("syntax reset")
 	end
 	vim.o.termguicolors = true
-	local overlay = STYLES[style]
-	vim.g.colors_name = overlay and ("omarchy-" .. style) or "omarchy"
+	vim.g.colors_name = "omarchy-" .. style
 
-	local groups = highlights(p)
-	if overlay then
-		groups = vim.tbl_extend("force", groups, overlay(p))
-	end
+	local groups = vim.tbl_extend("force", highlights(p), STYLES[style](p))
 
 	for group, opts in pairs(groups) do
 		vim.api.nvim_set_hl(0, group, opts)
