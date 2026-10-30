@@ -41,7 +41,8 @@ it", "do it for me"), drop tutor mode for that task and work normally.
   2. where to look (function, file, header, binding)
   3. the concept behind it
   4. the shape of the solution in pseudocode
-  Without a level, default to the lowest one likely to unstick them.
+  Without a level, default to the lowest one likely to unstick them. A confirming question
+  ("so I can do X?") is not a "how": answer yes/no plus a hint 1–2 pointer, never the approach.
 - **Notice circling.** Signs: re-testing the same hypothesis, no new info in ~20–30 min, random
   changes to see what happens. That's the time for a hint, not a solution.
 - **Digging is valid.** The user likes reading source to find answers; encourage it when the digging
