@@ -51,6 +51,52 @@ local function blend(top, bottom, amount)
 	)
 end
 
+--- "#rrggbb" -> hue (0-360), saturation and lightness (0-1). Blending moves
+--- all three at once; HSL lets a style keep a theme's hue while fixing how
+--- vivid and how bright a role is.
+local function to_hsl(hex)
+	local r, g, b = channels(hex)
+	r, g, b = r / 255, g / 255, b / 255
+	local max, min = math.max(r, g, b), math.min(r, g, b)
+	local l = (max + min) / 2
+	if max == min then
+		return 0, 0, l
+	end
+	local d = max - min
+	local s = l > 0.5 and d / (2 - max - min) or d / (max + min)
+	local h
+	if max == r then
+		h = (g - b) / d + (g < b and 6 or 0)
+	elseif max == g then
+		h = (b - r) / d + 2
+	else
+		h = (r - g) / d + 4
+	end
+	return h * 60, s, l
+end
+
+local function from_hsl(h, s, l)
+	local function channel(t)
+		t = t % 360
+		local q = l < 0.5 and l * (1 + s) or l + s - l * s
+		local p = 2 * l - q
+		if t < 60 then
+			return p + (q - p) * t / 60
+		elseif t < 180 then
+			return q
+		elseif t < 240 then
+			return p + (q - p) * (240 - t) / 60
+		end
+		return p
+	end
+	return string.format(
+		"#%02x%02x%02x",
+		clamp(channel(h + 120) * 255),
+		clamp(channel(h) * 255),
+		clamp(channel(h - 120) * 255)
+	)
+end
+
 -- Contrast floor for syntax colours, in WCAG ratio against the background.
 -- Below this, code stops being readable at a normal font size.
 local MIN_CONTRAST = 4.0
@@ -108,8 +154,11 @@ end
 
 --- The theme's palette plus the shades a colorscheme needs that Omarchy does
 --- not name. nil when colors.toml is missing or too incomplete to use.
-function M.palette()
-	local c = M.colors()
+---
+--- `c` is a colors.toml-shaped table to build from instead, for a style that
+--- brings its own colours.
+function M.palette(c)
+	c = c or M.colors()
 	for _, key in ipairs(REQUIRED) do
 		if not c[key] or not c[key]:match(HEX) then
 			return nil
@@ -413,13 +462,9 @@ local function alabaster(p)
 		["@punctuation.delimiter"] = punct,
 		["@punctuation.bracket"] = punct,
 		["@punctuation.special"] = punct,
-		-- Our own captures, from after/queries/<lang>/highlights.scm: names
-		-- at the point they are introduced. Uses stay @variable (plain).
-		-- Locals are plain (pure Alabaster). To try them coloured, use a hue
-		-- of their own (y9nika-style, e.g. p.orange), not a tint of fg: a
-		-- tinted fg is too close to fg to read reliably.
+		-- Our own capture, from after/queries/<lang>/highlights.scm: function
+		-- and type names where they are declared. Uses stay plain.
 		["@alabaster.definition"] = definition,
-		["@alabaster.local"] = plain,
 
 		-- LSP semantic tokens outrank Tree-sitter, and nvim links
 		-- @lsp.type.function/method/macro to the definition captures for every
@@ -469,13 +514,13 @@ local function alabaster(p)
 	}
 end
 
---- y9nika-style syntax (y9san9/y9nika.nvim), laid over alabaster(). Only
---- declarations are coloured: definitions (top-level names) in primary blue,
---- locals in secondary green, comments in the yellow marker. Literals share
---- the locals' green -- six base colours, not eight. Keywords, operators and
---- punctuation are muted *below* the text, since they are the most obvious
---- part of any program; `return` alone gets the marker, as an exit. No bold
---- or italics anywhere: scanning is easier when weight never changes.
+--- y9nika-style syntax (y9san9/y9nika.nvim), laid over alabaster().
+--- Definitions (function and type names) in primary blue, literals in
+--- secondary green, comments in the yellow marker. Unlike y9nika, locals stay
+--- plain. Keywords, operators and punctuation are muted *below* the text,
+--- since they are the most obvious part of any program; only exits (return,
+--- break, continue) get the marker. No bold or italics anywhere: scanning is
+--- easier when weight never changes.
 local function y9nika(p)
 	local base = { fg = p.fg }
 	local declaration = { fg = p.blue }
@@ -530,24 +575,25 @@ local function y9nika(p)
 		["@markup.heading"] = declaration,
 		["@markup.raw"] = variable,
 		["@alabaster.definition"] = declaration,
-		["@alabaster.local"] = variable,
 
 		["@lsp.type.enumMember"] = base,
 	})
 end
 
 --- Nearly monochrome (after nvim's built-in `quiet`, as james-orcales/big_bang
---- uses it), laid over alabaster(). Comments are dimmed into the background
---- and everything else -- strings, keywords, return, constants, numbers,
---- definitions, punctuation -- is plain text, so whatever turns out to be
---- missed while reading is what earns a colour back.
+--- uses it), laid over alabaster(). Comments are dimmed into the background,
+--- strings are a soft gold, definitions keep alabaster()'s colour, and
+--- everything else -- keywords, return, constants, numbers, punctuation -- is
+--- plain text, so whatever turns out to be missed while reading is what earns
+--- a colour back.
 local function quiet(p)
 	-- Not p.muted: some themes' is near the background. Like big_bang's #888
 	-- on #DFE0DC text: about half way down, never below the contrast floor.
 	local comment = { fg = readable(blend(p.fg, p.bg, 0.55), p.bg, p.fg) }
 	local plain = { fg = p.fg }
-	-- Kept as its own role so giving strings a colour back is one line.
-	local string = plain
+	-- big_bang's gold accent, softened toward grey like alabaster()'s
+	-- strings so it stays quiet.
+	local string = { fg = readable(blend(p.yellow, p.fg_dark, 0.65), p.bg, p.fg_bright) }
 
 	return vim.tbl_extend("force", alabaster(p), {
 		-- Syntax (non-Tree-sitter filetypes)
@@ -561,7 +607,6 @@ local function quiet(p)
 		Number = plain,
 		Boolean = plain,
 		Float = plain,
-		Function = plain,
 		Delimiter = plain,
 
 		-- Tree-sitter
@@ -579,11 +624,6 @@ local function quiet(p)
 		["@constant.builtin"] = plain,
 		["@number"] = plain,
 		["@boolean"] = plain,
-		["@function"] = plain,
-		["@function.method"] = plain,
-		["@function.macro"] = plain,
-		["@constant.macro"] = plain,
-		["@type.definition"] = plain,
 		["@keyword.return"] = plain,
 		["@tag.delimiter"] = plain,
 		["@punctuation.delimiter"] = plain,
@@ -591,26 +631,191 @@ local function quiet(p)
 		["@punctuation.special"] = plain,
 		["@markup.list"] = plain,
 		["@markup.raw"] = string,
-		["@alabaster.definition"] = plain,
 
 		["@lsp.type.enumMember"] = plain,
-		["@lsp.typemod.function.declaration"] = plain,
-		["@lsp.typemod.method.declaration"] = plain,
-		["@lsp.typemod.macro.declaration"] = plain,
-		["@lsp.typemod.class.declaration"] = plain,
-		["@lsp.typemod.struct.declaration"] = plain,
-		["@lsp.typemod.enum.declaration"] = plain,
-		["@lsp.typemod.type.declaration"] = plain,
 	})
 end
 
-local STYLES = { alabaster = alabaster, y9nika = y9nika, quiet = quiet }
+--- rexim/gruber-darker-theme, Tsoding's Emacs theme, in colors.toml's shape.
+--- Unlike the other styles this ignores the Omarchy theme: Gruber is these
+--- exact colours or it isn't Gruber.
+local GRUBER = {
+	mode = "dark",
+	background = "#181818", -- bg
+	dark_background = "#101010", -- bg-1
+	lighter_background = "#282828", -- bg+1
+	selection = "#453d41", -- bg+2, its region
+	muted = "#52494e", -- bg+4, its line numbers
+	foreground = "#e4e4ef", -- fg
+	bright_foreground = "#f4f4ff", -- fg+1
+	accent = "#ffdd33", -- yellow, its cursor
+	red = "#f43841",
+	green = "#73c936",
+	yellow = "#ffdd33",
+	orange = "#cc8c3c", -- it has no orange; brown fills in for warnings
+	brown = "#cc8c3c",
+	blue = "#96a6c8", -- niagara
+	cyan = "#95a99f", -- quartz
+	magenta = "#9e95c7", -- wisteria
+}
+
+--- Gruber Darker's faces (rexim/gruber-darker-theme), mapped role for role
+--- from Emacs font-lock: keywords, builtins and directives yellow, comments
+--- brown, doc comments and strings green, definitions niagara. Departs from
+--- it where it reads better here: strings softened, literals (numbers,
+--- true/false/nil) in alabaster()'s constant colour, and types plain like
+--- named constants, calls, variables and operators. Without the original's
+--- bold keywords.
+local function gruber(p)
+	local keyword = { fg = p.yellow }
+	local comment = { fg = p.brown }
+	-- Softened toward grey like alabaster()'s strings: in log-heavy code
+	-- they are most of the colour on screen.
+	local string = { fg = readable(blend(p.green, p.fg_dark, 0.65), p.bg, p.fg_bright) }
+	-- Literal values in alabaster()'s constant colour. Gruber has no such
+	-- role (its quartz went to types); in its own palette this is wisteria.
+	local literal = { fg = p.magenta }
+	local niagara = { fg = p.blue }
+	local plain = { fg = p.fg }
+
+	return vim.tbl_extend("force", alabaster(p), {
+		-- Syntax (non-Tree-sitter filetypes)
+		Comment = comment,
+		SpecialComment = string,
+		Todo = comment,
+		String = string,
+		Character = string,
+		SpecialChar = string,
+		Constant = plain,
+		Number = literal,
+		Float = literal,
+		Boolean = literal,
+		Function = niagara,
+		Statement = keyword,
+		Conditional = keyword,
+		Repeat = keyword,
+		Label = keyword,
+		Keyword = keyword,
+		Exception = keyword,
+		StorageClass = keyword,
+		Structure = keyword,
+		Typedef = keyword,
+		PreProc = keyword,
+		Include = keyword,
+		Define = keyword,
+		Macro = keyword,
+		PreCondit = keyword,
+		Type = plain,
+		Delimiter = plain,
+
+		-- Tree-sitter
+		["@comment"] = comment,
+		["@comment.documentation"] = string,
+		["@comment.todo"] = comment,
+		["@comment.note"] = comment,
+		["@comment.warning"] = comment,
+		["@comment.error"] = comment,
+		["@string"] = string,
+		["@string.escape"] = string,
+		["@string.special"] = string,
+		["@string.special.url"] = { fg = string.fg, underline = true },
+		["@character"] = string,
+		-- Named constants stay plain: without an LSP, @constant is a guess
+		-- from spelling (any ALL_CAPS name). Literals the parser knows.
+		["@constant"] = plain,
+		["@constant.builtin"] = literal,
+		["@number"] = literal,
+		["@boolean"] = literal,
+		["@function"] = niagara,
+		["@function.method"] = niagara,
+		["@function.macro"] = niagara,
+		["@constant.macro"] = plain,
+		["@type.definition"] = niagara,
+		["@function.builtin"] = keyword,
+		["@variable.builtin"] = keyword,
+		["@keyword"] = keyword,
+		["@keyword.return"] = keyword,
+		["@keyword.import"] = keyword,
+		["@keyword.exception"] = keyword,
+		["@keyword.directive"] = keyword,
+		["@type"] = plain,
+		["@type.builtin"] = plain,
+		["@attribute"] = plain,
+		["@tag.delimiter"] = plain,
+		["@punctuation.delimiter"] = plain,
+		["@punctuation.bracket"] = plain,
+		["@punctuation.special"] = plain,
+		["@markup.list"] = plain,
+		["@markup.raw"] = string,
+		["@alabaster.definition"] = niagara,
+
+		["@lsp.type.enumMember"] = plain,
+		["@lsp.typemod.function.declaration"] = niagara,
+		["@lsp.typemod.method.declaration"] = niagara,
+		["@lsp.typemod.macro.declaration"] = niagara,
+		["@lsp.typemod.class.declaration"] = niagara,
+		["@lsp.typemod.struct.declaration"] = niagara,
+		["@lsp.typemod.enum.declaration"] = niagara,
+		["@lsp.typemod.type.declaration"] = niagara,
+	})
+end
+
+--- Gruber's idea on the Omarchy theme's colours. What makes Gruber read is
+--- not its hues but a hierarchy: vivid keywords, a duller warm comment and
+--- one strong string colour. So those roles keep Gruber's saturation and
+--- lightness and take only their hue from the theme -- held within `spread`
+--- degrees of Gruber's, and replaced outright where the theme's colour is
+--- really a grey (last-horizon). Definitions and literals use the theme's own
+--- blue and magenta, as alabaster() does.
+---
+--- With `own_tone` the role keeps the theme's saturation and lightness too,
+--- so it is only as vivid as the theme made it.
+local function gruber_themed(p)
+	local function role(theme_color, reference, spread, own_tone)
+		local th, ts, tl = to_hsl(theme_color)
+		local rh, rs, rl = to_hsl(reference)
+		local h = rh
+		if ts >= 0.2 then
+			local d = (th - rh + 180) % 360 - 180
+			h = rh + math.max(-spread, math.min(spread, d))
+			if own_tone then
+				return readable(from_hsl(h, ts, tl), p.bg, p.fg_bright)
+			end
+		end
+		if p.mode == "light" then
+			rl = 1 - rl
+		end
+		return readable(from_hsl(h, rs, rl), p.bg, p.fg_bright)
+	end
+
+	local q = vim.tbl_extend("force", p, {
+		-- Narrow: themes' yellows lean orange, toward the brown comments.
+		-- In the theme's own tone: at Gruber's full saturation the keywords
+		-- were the loudest thing on screen.
+		yellow = role(p.yellow, GRUBER.yellow, 5, true),
+		brown = role(p.brown, GRUBER.brown, 30),
+		green = role(p.green, GRUBER.green, 30),
+		-- blue is left as the theme's own: definitions in alabaster()'s colour.
+	})
+	return gruber(q)
+end
+
+local STYLES = {
+	alabaster = alabaster,
+	y9nika = y9nika,
+	quiet = quiet,
+	gruber = gruber,
+	["gruber-themed"] = gruber_themed,
+}
+
+-- Styles that bring their own colours instead of the Omarchy theme's.
+local FIXED = { gruber = GRUBER }
 
 --- Apply the generated colorscheme in `style` (a key of STYLES),
 --- whose function's syntax groups are laid over highlights(). false when
 --- colors.toml can't be used.
 function M.load(style)
-	local p = M.palette()
+	local p = M.palette(FIXED[style])
 	if not p then
 		return false
 	end

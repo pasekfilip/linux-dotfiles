@@ -1,5 +1,5 @@
 -- `:colorscheme omarchy-quiet` -- the generated Omarchy colorscheme with
--- nearly monochrome syntax: dim comments, nothing else.
+-- nearly monochrome syntax: dim comments, gold strings, coloured definitions.
 -- See lua/omarchy_palette.lua.
 --
 -- Erroring out rather than returning quietly is what lets lua/omarchy.lua

@@ -15,10 +15,12 @@ local THEME_NAME = CURRENT .. "/theme.name"
 -- Which syntax roles get colour:
 --   "alabaster"  comments, strings, constants and definitions
 --   "y9nika"     only declarations coloured, keywords muted below text
---   "quiet"      dim comments, nothing else
+--   "quiet"      dim comments, gold strings, coloured definitions
+--   "gruber"     Tsoding's Gruber Darker, its own fixed colours
+--   "gruber-themed"  Gruber's hierarchy in the Omarchy theme's hues
 -- :OmarchyStyle switches it for the session.
-M.style = "alabaster"
-M.STYLES = { "quiet", "alabaster", "y9nika" }
+M.style = "gruber-themed"
+M.STYLES = { "quiet", "alabaster", "y9nika", "gruber", "gruber-themed" }
 
 --- Name of the active Omarchy theme, e.g. "vantablack". nil if unknown.
 function M.theme_name()
