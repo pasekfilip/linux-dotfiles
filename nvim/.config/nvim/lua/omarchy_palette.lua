@@ -417,7 +417,9 @@ end
 --- UI, diagnostics and diffs are left as highlights() has them.
 local function alabaster(p)
 	local comment = { fg = p.yellow }
-	local string = { fg = p.green }
+	-- Themes pick green as a terminal accent, and some are neon. Pulling it
+	-- toward grey takes the edge off those while barely moving soft ones.
+	local string = { fg = readable(blend(p.green, p.fg_dark, 0.65), p.bg, p.fg_bright) }
 	local constant = { fg = p.magenta }
 	local definition = { fg = p.blue }
 	local plain = { fg = p.fg }
@@ -463,7 +465,7 @@ local function alabaster(p)
 		["@string"] = string,
 		["@string.escape"] = string,
 		["@string.special"] = string,
-		["@string.special.url"] = { fg = p.green, underline = true },
+		["@string.special.url"] = { fg = string.fg, underline = true },
 		["@character"] = string,
 		["@constant"] = constant,
 		["@constant.builtin"] = constant,
@@ -546,11 +548,109 @@ local function alabaster(p)
 	}
 end
 
+--- Jonathan Blow's stream colours (nickav/naysayer-theme.el), laid over
+--- alabaster() and derived from the theme's palette rather than naysayer's own
+--- hex. Keywords, builtins and definitions share the brightest ink, so the
+--- skeleton of a long function and the names it introduces stand out together;
+--- keywords are also bold, because many themes' fg is already near white and
+--- brightness alone would not separate them. Comments are loud green (code is
+--- meant to be read with them), strings cyan, constants and numbers a pale
+--- cyan. Directives (#if) and builtin types (int, f32) count as keywords; user
+--- types, locals, calls, uses and operators stay plain.
+local function gruber(p)
+	local ink = p.mode == "light" and "#000000" or "#ffffff"
+	local function pale(color)
+		return readable(blend(ink, color, 0.45), p.bg, p.fg_bright)
+	end
+
+	local bright = blend(ink, p.fg_bright, 0.6)
+	local keyword = { fg = bright, bold = true }
+	local definition = { fg = bright }
+	local comment = { fg = p.green }
+	local string = { fg = p.cyan }
+	local constant = { fg = pale(p.cyan) }
+	local plain = { fg = p.fg }
+
+	return vim.tbl_extend("force", alabaster(p), {
+		-- Syntax (non-Tree-sitter filetypes)
+		Comment = comment,
+		SpecialComment = comment,
+		String = string,
+		Character = string,
+		SpecialChar = string,
+		Constant = constant,
+		Number = constant,
+		Boolean = constant,
+		Float = constant,
+		Function = definition,
+		Statement = keyword,
+		Conditional = keyword,
+		Repeat = keyword,
+		Label = keyword,
+		Keyword = keyword,
+		Exception = keyword,
+		PreProc = keyword,
+		Include = keyword,
+		Define = keyword,
+		Macro = keyword,
+		PreCondit = keyword,
+		Type = plain,
+		StorageClass = keyword,
+		Structure = keyword,
+		Typedef = keyword,
+		Delimiter = plain,
+
+		-- Tree-sitter
+		["@comment"] = comment,
+		["@string"] = string,
+		["@string.escape"] = string,
+		["@string.special"] = string,
+		["@string.special.url"] = { fg = p.cyan, underline = true },
+		["@character"] = string,
+		["@constant"] = constant,
+		["@constant.builtin"] = constant,
+		["@number"] = constant,
+		["@boolean"] = constant,
+		["@function"] = definition,
+		["@function.method"] = definition,
+		["@function.macro"] = definition,
+		["@constant.macro"] = definition,
+		["@type.definition"] = definition,
+		["@function.builtin"] = definition,
+		["@variable.builtin"] = definition,
+		["@keyword"] = keyword,
+		["@keyword.return"] = keyword,
+		["@keyword.import"] = keyword,
+		["@keyword.exception"] = keyword,
+		["@keyword.directive"] = keyword,
+		["@type"] = plain,
+		["@type.builtin"] = keyword,
+		["@attribute"] = plain,
+		["@punctuation.delimiter"] = plain,
+		["@punctuation.bracket"] = plain,
+		["@punctuation.special"] = plain,
+		["@markup.raw"] = string,
+		["@alabaster.definition"] = definition,
+		["@alabaster.local"] = plain,
+
+		["@lsp.type.enumMember"] = constant,
+		["@lsp.typemod.function.declaration"] = definition,
+		["@lsp.typemod.method.declaration"] = definition,
+		["@lsp.typemod.macro.declaration"] = definition,
+		["@lsp.typemod.class.declaration"] = definition,
+		["@lsp.typemod.struct.declaration"] = definition,
+		["@lsp.typemod.enum.declaration"] = definition,
+		["@lsp.typemod.type.declaration"] = definition,
+	})
+end
+
+local STYLES = { alabaster = alabaster, gruber = gruber }
+
 --- Apply the generated colorscheme. false when colors.toml can't be used, so
 --- the caller can fall back to a real colorscheme plugin.
 ---
---- `style` "alabaster" swaps the syntax groups for alabaster(); anything else
---- is the full-colour scheme.
+--- `style` "alabaster" or "gruber" swaps the syntax groups for that
+--- function's; anything else is the full-colour scheme.
 function M.load(style)
 	local p = M.palette()
 	if not p then
@@ -568,11 +668,12 @@ function M.load(style)
 		vim.cmd("syntax reset")
 	end
 	vim.o.termguicolors = true
-	vim.g.colors_name = style == "alabaster" and "omarchy-alabaster" or "omarchy"
+	local overlay = STYLES[style]
+	vim.g.colors_name = overlay and ("omarchy-" .. style) or "omarchy"
 
 	local groups = highlights(p)
-	if style == "alabaster" then
-		groups = vim.tbl_extend("force", groups, alabaster(p))
+	if overlay then
+		groups = vim.tbl_extend("force", groups, overlay(p))
 	end
 
 	for group, opts in pairs(groups) do

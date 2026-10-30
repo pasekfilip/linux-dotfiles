@@ -27,12 +27,15 @@ local THEME_NAME = CURRENT .. "/theme.name"
 -- using instead of some unrelated theme's.
 local GENERATED = { colorscheme = "omarchy" }
 
--- When set, every theme uses the generated colorscheme in Alabaster style
--- (only comments, strings, constants and definitions coloured) instead of its
--- MAP entry, so the colours still follow the theme but there are fewer of
--- them. :OmarchyAlabaster flips it for the session.
-M.alabaster = true
-local ALABASTER = { colorscheme = "omarchy-alabaster" }
+-- When set, every theme uses the generated colorscheme in a reduced syntax
+-- style instead of its MAP entry, so the colours still follow the theme but
+-- there are fewer of them:
+--   "alabaster"  only comments, strings, constants and definitions coloured
+--   "gruber"     Jonathan Blow's stream colours (naysayer), theme-derived
+--   nil          the theme's MAP entry, full highlighting
+-- :OmarchyStyle switches it for the session.
+M.style = "alabaster"
+M.STYLES = { "alabaster", "gruber", "full" }
 
 -- Last resort, for when Omarchy isn't installed at all. Two of them so a light
 -- desktop doesn't land on a dark editor.
@@ -101,7 +104,7 @@ end
 --- Apply the colorscheme matching the active Omarchy theme.
 function M.apply()
 	local name = M.theme_name()
-	local entry = M.alabaster and ALABASTER or (name and M.MAP[name])
+	local entry = M.style and { colorscheme = "omarchy-" .. M.style } or (name and M.MAP[name])
 
 	local background = M.background()
 	if background then
@@ -175,11 +178,30 @@ function M.setup()
 		vim.notify("omarchy: " .. (M.theme_name() or "unknown") .. " -> " .. vim.g.colors_name)
 	end, { desc = "Re-apply the colorscheme for the current Omarchy theme" })
 
-	vim.api.nvim_create_user_command("OmarchyAlabaster", function()
-		M.alabaster = not M.alabaster
+	-- :OmarchyStyle gruber picks one; with no argument it cycles through them.
+	vim.api.nvim_create_user_command("OmarchyStyle", function(opts)
+		local style = opts.args
+		if style == "" then
+			local current = M.style or "full"
+			for i, name in ipairs(M.STYLES) do
+				if name == current then
+					style = M.STYLES[i % #M.STYLES + 1]
+				end
+			end
+		elseif not vim.tbl_contains(M.STYLES, style) then
+			vim.notify("omarchy: unknown style " .. style, vim.log.levels.ERROR)
+			return
+		end
+		M.style = style ~= "full" and style or nil
 		M.apply()
 		vim.notify("omarchy: " .. vim.g.colors_name)
-	end, { desc = "Toggle Alabaster-style syntax for the Omarchy colorscheme" })
+	end, {
+		nargs = "?",
+		complete = function()
+			return M.STYLES
+		end,
+		desc = "Switch the syntax style of the Omarchy colorscheme",
+	})
 end
 
 return M
