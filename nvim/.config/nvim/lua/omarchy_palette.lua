@@ -535,16 +535,16 @@ end
 
 --- Nearly monochrome (after nvim's built-in `quiet`, as james-orcales/big_bang
 --- uses it), laid over alabaster(). Comments are dimmed into the background
---- and strings are the one syntax colour, green. Everything else -- keywords, return, constants, numbers,
+--- and everything else -- strings, keywords, return, constants, numbers,
 --- definitions, punctuation -- is plain text, so whatever turns out to be
 --- missed while reading is what earns a colour back.
 local function quiet(p)
 	-- Not p.muted: some themes' is near the background. Like big_bang's #888
 	-- on #DFE0DC text: about half way down, never below the contrast floor.
 	local comment = { fg = readable(blend(p.fg, p.bg, 0.55), p.bg, p.fg) }
-	-- Same softening as alabaster()'s strings, for the same neon greens.
-	local string = { fg = readable(blend(p.green, p.fg_dark, 0.65), p.bg, p.fg_bright) }
 	local plain = { fg = p.fg }
+	-- Kept as its own role so giving strings a colour back is one line.
+	local string = plain
 
 	return vim.tbl_extend("force", alabaster(p), {
 		-- Syntax (non-Tree-sitter filetypes)

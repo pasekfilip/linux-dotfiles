@@ -15,7 +15,7 @@ local THEME_NAME = CURRENT .. "/theme.name"
 -- Which syntax roles get colour:
 --   "alabaster"  comments, strings, constants and definitions
 --   "y9nika"     only declarations coloured, keywords muted below text
---   "quiet"      dim comments, green strings, nothing else
+--   "quiet"      dim comments, nothing else
 -- :OmarchyStyle switches it for the session.
 M.style = "quiet"
 M.STYLES = { "quiet", "alabaster", "y9nika" }
