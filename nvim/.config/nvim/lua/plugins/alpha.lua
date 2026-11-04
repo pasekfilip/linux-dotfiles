@@ -15,6 +15,7 @@ return {
 			"                  私          私            ",
 			"                 私私私私私私私私           ",
 			"               謙虚な人を目指したい         ",
+			"               (けんきょ)                   ",
 		}
 
 		dashboard.section.buttons.val = {
