@@ -63,6 +63,14 @@ set("n", "<leader>i", function()
 	require("task").toggle()
 end)
 
+-- Async compile into the quickfix window, see lua/compile.lua
+set("n", "<leader>m", function()
+	require("compile").recompile()
+end, { desc = "Recompile (or compile)" })
+set("n", "<leader>M", function()
+	require("compile").compile()
+end, { desc = "Compile (prompt for command)" })
+
 -- Copy Full File-Path
 set("n", "<leader>yp", function()
 	local path = vim.fn.expand("%:p")

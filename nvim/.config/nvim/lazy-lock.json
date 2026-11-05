@@ -1,6 +1,5 @@
 {
   "alpha-nvim": { "branch": "main", "commit": "4ba26e41990c11620c96c0e1cff20eab65efde4a" },
-  "compile-mode.nvim": { "branch": "main", "commit": "0c91728af9e8433ec1beb99f51e6264df7ab3ee6" },
   "d2-vim": { "branch": "master", "commit": "a950f1a276506ac4bbc274dd65ba98b15a1d490d" },
   "fzf-lua": { "branch": "main", "commit": "c67fadd9a24230417267e4f9068227e093c0be2b" },
   "harpoon": { "branch": "harpoon2", "commit": "87b1a3506211538f460786c23f98ec63ad9af4e5" },
