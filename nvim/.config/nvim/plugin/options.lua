@@ -28,14 +28,14 @@ opt.smartcase = true -- Case sensitive if uppercase in search
 opt.hlsearch = true -- Don't highlight search results
 opt.incsearch = true -- Show matches as you type
 opt.inccommand = "split" -- When doing /%s it opens split for preview
-opt.grepprg = "rg --vimgrep" -- default adds -uu, which greps gitignored/hidden files too
+opt.grepprg = "rg --vimgrep -S" -- default adds -uu, which greps gitignored/hidden files too
 
 -- Visual settings
 opt.termguicolors = true -- Enable 24-bit colors
 opt.signcolumn = "auto" -- Only when there is a sign: just DAP breakpoints now
--- opt.colorcolumn = "150"                    -- Show column at 100 characters
+-- opt.colorcolumn = "150"
 opt.cmdheight = 1 -- Command line height
-opt.completeopt = "menuone,noinsert" -- Completion options
+opt.completeopt = "menuone,fuzzy" -- Completion options
 opt.showmode = false -- Don't show mode in command line
 opt.pumheight = 10 -- Popup menu height
 opt.pumblend = 10 -- Popup menu transparency
