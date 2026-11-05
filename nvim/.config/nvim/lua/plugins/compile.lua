@@ -29,7 +29,7 @@ return {
 				cpp = "cmake --build build && ./build/main",
 				java = "mvn -q package",
 				lua = "lua %",
-				odin = "odin run .",
+				odin = "odin run % -file",
 				python = "python %",
 				sh = "sh %",
 			},
