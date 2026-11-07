@@ -23,10 +23,12 @@ return {
 	init = function()
 		-- Enable treesitter highlighting and indentation via FileType autocmd
 		vim.api.nvim_create_autocmd("FileType", {
-			callback = function()
+			callback = function(args)
 				-- Only enable treesitter highlighting and indentation if a parser exists
 				local ok = pcall(vim.treesitter.start)
-				if ok then
+				-- html: treesitter indents once per nested element (<html> and
+				-- <body> both count), so keep Vim's own HtmlIndent() instead.
+				if ok and args.match ~= "html" then
 					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 				end
 			end,
