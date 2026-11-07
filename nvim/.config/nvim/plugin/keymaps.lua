@@ -99,3 +99,28 @@ set("n", "<leader>u", function()
 	vim.cmd.packadd("nvim.undotree")
 	require("undotree").open()
 end, { desc = "Toggle undo tree" })
+
+-- Rename under cursor
+set("n", "<leader>r", function()
+    local word = vim.fn.expand("<cword>")
+    local rename
+    local opts = { prompt = 'Enter new name: ', scope = 'buffer' }
+    vim.ui.input(opts, function(input)
+        rename = input
+    end)
+
+    vim.cmd("silent grep! -w " .. word)
+    vim.cmd("copen")
+    vim.cmd("%s/".. word .. "/" .. rename .. "/gc")
+
+end
+, { desc = "In house lsp rename"})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'help',
+  callback = function(ev)
+    vim.keymap.set('n', '<CR>', '<C-]>', { buffer = ev.buf })
+    vim.keymap.set('n', '<BS>', '<C-T>', { buffer = ev.buf })
+  end,
+})
+
