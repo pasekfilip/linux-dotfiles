@@ -745,6 +745,7 @@ local function gruber(p)
 		["@punctuation.delimiter"] = plain,
 		["@punctuation.bracket"] = plain,
 		["@punctuation.special"] = plain,
+		["@markup.heading"] = { fg = readable(blend(p.yellow, p.fg_dark, 0.6), p.bg, p.fg_bright), bold = true },
 		["@markup.list"] = plain,
 		["@markup.raw"] = string,
 		["@alabaster.definition"] = niagara,
