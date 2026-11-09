@@ -22,6 +22,7 @@ o.bind("ALT + W", "Close active window", hl.dsp.window.close())
 o.bind("ALT + P", "Pseudo window", hl.dsp.window.pseudo())
 o.bind("ALT + V", "Toggle floating", hl.dsp.window.float({ action = "toggle" }))
 o.bind("ALT + F", "Force full screen", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+o.bind("SUPER + L", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
 -- Move focus with ALT + hjkl
 o.bind("ALT + H", "Move focus left", hl.dsp.focus({ direction = "l" }))
@@ -39,6 +40,8 @@ for workspace = 1, 10 do
 		hl.dsp.window.move({ workspace = tostring(workspace) })
 	)
 end
+
+o.workspaces.reconcile = function() end
 
 o.bind("ALT + SHIFT + H", "Move window to the left", hl.dsp.window.move({ direction = "l" }))
 o.bind("ALT + SHIFT + L", "Move window to the right", hl.dsp.window.move({ direction = "r" }))
