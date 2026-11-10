@@ -1,5 +1,25 @@
 return {
 	{
+		-- Added/changed/deleted lines in the sign column, vs. the index.
+		-- Colors come from omarchy_palette.lua (GitSigns* groups).
+		"lewis6991/gitsigns.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		opts = {
+			on_attach = function(buf)
+				local gs = require("gitsigns")
+				local function map(lhs, rhs, desc)
+					vim.keymap.set("n", lhs, rhs, { buffer = buf, desc = desc })
+				end
+				map("]h", function() gs.nav_hunk("next") end, "Next git hunk")
+				map("[h", function() gs.nav_hunk("prev") end, "Prev git hunk")
+				map("<leader>hp", gs.preview_hunk_inline, "Preview hunk inline")
+				map("<leader>hr", gs.reset_hunk, "Reset hunk")
+				map("<leader>hs", gs.stage_hunk, "Stage hunk")
+				map("<leader>hb", gs.blame_line, "Blame line")
+			end,
+		},
+	},
+	{
 		-- Magit for nvim. Diffs are inline/unified only (no diffview), which
 		-- suits a zoomed-in terminal better than side-by-side. Every view opens
 		-- in the current window ("replace"); the defaults are tabs and vsplits.

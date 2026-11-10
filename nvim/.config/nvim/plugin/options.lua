@@ -32,7 +32,7 @@ opt.grepprg = "rg --vimgrep -S" -- default adds -uu, which greps gitignored/hidd
 
 -- Visual settings
 opt.termguicolors = true -- Enable 24-bit colors
-opt.signcolumn = "auto" -- Only when there is a sign: just DAP breakpoints now
+opt.signcolumn = "auto" -- Only when there is a sign: DAP breakpoints, gitsigns
 -- opt.colorcolumn = "150"
 opt.cmdheight = 1 -- Command line height
 opt.completeopt = "menuone,fuzzy" -- Completion options
