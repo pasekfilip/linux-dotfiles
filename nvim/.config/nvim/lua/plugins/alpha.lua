@@ -7,13 +7,14 @@ return {
 		local dashboard = require("alpha.themes.dashboard")
 
 		dashboard.section.header.val = {
-			"                        私                  ",
-			"                      私  私                ",
-			"                     私    私               ",
-			"                    私      私              ",
-			"                   私        私             ",
-			"                  私          私            ",
-			"                 私私私私私私私私           ",
+			"                        育                  ",
+			"                       育育                 ",
+			"                      育  育                ",
+			"                     育    育               ",
+			"                    育      育              ",
+			"                   育        育             ",
+			"                  育          育            ",
+			"                 育育育育育育育育           ",
 			"               謙虚な人を目指したい         ",
 			"               (けんきょ)                   ",
 		}
