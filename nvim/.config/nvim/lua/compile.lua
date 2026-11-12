@@ -82,7 +82,7 @@ local function to_items(lines, efm)
 	local items = {}
 	for _, line in ipairs(lines) do
 		local item = vim.fn.getqflist({ lines = { line }, efm = efm }).items[1]
-		if not (item and item.valid == 1) then
+		if not (item and item.valid == 1 and vim.fn.filereadable(vim.fn.bufname(item.bufnr)) == 1) then
 			item = { valid = 0 }
 		end
 		item.text = line
