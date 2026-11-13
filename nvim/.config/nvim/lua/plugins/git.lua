@@ -5,6 +5,9 @@ return {
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
+			-- Signs are hidden until toggled with <leader>ht. Hunks are still
+			-- tracked, so the maps below work either way.
+			signcolumn = false,
 			on_attach = function(buf)
 				local gs = require("gitsigns")
 				local function map(lhs, rhs, desc)
@@ -16,6 +19,7 @@ return {
 				map("<leader>hr", gs.reset_hunk, "Reset hunk")
 				map("<leader>hs", gs.stage_hunk, "Stage hunk")
 				map("<leader>hb", gs.blame_line, "Blame line")
+				map("<leader>ht", gs.toggle_signs, "Toggle git signs")
 			end,
 		},
 	},
