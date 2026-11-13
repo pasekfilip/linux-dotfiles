@@ -24,14 +24,15 @@ return {
 		},
 	},
 	{
-		-- Magit for nvim. Diffs are inline/unified only (no diffview), which
-		-- suits a zoomed-in terminal better than side-by-side. Every view opens
-		-- in the current window ("replace"); the defaults are tabs and vsplits.
+		-- Magit for nvim. Its own diffs are inline/unified, which suits a
+		-- zoomed-in terminal; the d popup hands off to diffview (below) for a
+		-- side-by-side review. Every view opens in the current window
+		-- ("replace"); the defaults are tabs and vsplits.
 		-- In the status: <Tab> expand a file's diff, s/u stage/unstage,
 		-- c c commit, P p push, F p pull, ? for all keys, q to leave.
 		"NeogitOrg/neogit",
 		lazy = true,
-		dependencies = { "nvim-lua/plenary.nvim" },
+		dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
 		cmd = "Neogit",
 		keys = {
 			{ "<leader>gs", "<cmd>Neogit<cr>", desc = "Git status (Neogit)" },
@@ -46,6 +47,20 @@ return {
 			reflog_view = { kind = "replace" },
 			stash = { kind = "replace" },
 			refs_view = { kind = "replace" },
+		},
+	},
+	{
+		-- GitHub-review style: file list on the left, side-by-side diff of the
+		-- selected file on the right, in its own tab. <Tab>/<S-Tab> step
+		-- through files, g? lists the keys, <leader>gq closes the tab.
+		--   :DiffviewOpen              working tree vs. index
+		--   :DiffviewOpen main...HEAD  what a PR from this branch would show
+		"sindrets/diffview.nvim",
+		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
+		keys = {
+			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Review changes (Diffview)" },
+			{ "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "History of the current file (Diffview)" },
+			{ "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
 		},
 	},
 	{
