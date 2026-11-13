@@ -79,6 +79,9 @@ keybind = ctrl+shift+g=toggle_background_opacity
 keybind = ctrl+backspace=text:\x17
 keybind = ctrl+equal=increase_font_size:1
 keybind = ctrl+minus=decrease_font_size:1
+# One-press zoom out; ctrl+0 (ghostty's default reset_font_size) zooms back.
+# Physical Digit9 for the same reason as the Digit* binds above.
+keybind = ctrl+Digit9=set_font_size:13
 
 keybind = ctrl+shift+c=copy_to_clipboard
 keybind = ctrl+shift+v=paste_from_clipboard
