@@ -1,0 +1,33 @@
+# Odin for universal-ctags, which ships no Odin parser.
+#
+# Line-based regexes, so this knows names, not packages or scopes. Patterns are
+# tried in order and {exclusive} stops at the first hit, so the catch-all
+# constant rule must stay below the proc and type rules.
+#
+# `::` declarations may be indented: bindings inside `foreign lib { ... }` and
+# `when ... { ... }` blocks are, and those are most of vendor:. Variables are
+# matched at column 0 only, otherwise every struct field and proc parameter
+# would become a tag.
+
+--langdef=Odin
+--map-Odin=+.odin
+
+--kinddef-Odin=p,proc,procedures
+--kinddef-Odin=t,type,types
+--kinddef-Odin=c,constant,constants
+--kinddef-Odin=v,variable,package level variables
+
+# name :: proc(...)   name :: #force_inline proc "c" (...)   name :: proc{a, b}
+--regex-Odin=/^[[:space:]]*(@\([^)]*\)[[:space:]]*)*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*::[[:space:]]*(#[a-z_]+[[:space:]]*)*proc([^A-Za-z0-9_]|$)/\2/p/{exclusive}
+
+# name :: struct {   name :: enum u8 {   name :: union {   name :: distinct T
+--regex-Odin=/^[[:space:]]*(@\([^)]*\)[[:space:]]*)*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*::[[:space:]]*(#[a-z_]+[[:space:]]*)*(struct|enum|union|bit_set|bit_field|distinct)([^A-Za-z0-9_]|$)/\2/t/{exclusive}
+
+# name :: anything else (constants, aliases)
+--regex-Odin=/^[[:space:]]*(@\([^)]*\)[[:space:]]*)*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*::/\2/c/{exclusive}
+
+# name : Type : value
+--regex-Odin=/^([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*:[[:space:]]*[^:=]+:([^=]|$)/\1/c/{exclusive}
+
+# name := value   name: Type   name: Type = value
+--regex-Odin=/^([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*:([^:]|$)/\1/v/{exclusive}
