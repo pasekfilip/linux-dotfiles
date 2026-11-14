@@ -95,3 +95,4 @@ o.bind(
 	'grim -g "$(slurp)" /tmp/ocr.png && tesseract -l jpn /tmp/ocr.png - | tr -d "[:space:]" | wl-copy && rm /tmp/ocr.png'
 )
 o.bind("SUPER + V", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")
+o.bind("SUPER + E", "Emojis", { panel = "omarchy.emojis" })
