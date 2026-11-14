@@ -1,6 +1,6 @@
 -- Replaces telescope.nvim. Defaults are left alone except for two things that
 -- actually break without config.
-local IGNORE = { "target", "build", "node_modules", ".git", ".settings", ".metadata", "*.class", "*.jar", "*.war" }
+local IGNORE = { "target", "build", "node_modules", ".git", ".settings", ".metadata", "*.class", "*.jar", "*.war", "tags" }
 
 local fd_opts = "--color=never --type f --type l"
 local rg_opts = "--column --line-number --no-heading --color=always --smart-case"
