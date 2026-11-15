@@ -20,6 +20,7 @@ return {
                     ["<C-s>"] = false,
                     ["<C-h>"] = false,
                     ["<C-l>"] = false,
+                    ["g!"] = "actions.open_cmdline",
                 },
             })
         end,
