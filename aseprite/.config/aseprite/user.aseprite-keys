@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<keyboard version="1">
+    <commands>
+        <key command="CopyMerged" shortcut="Ctrl+Shift+C" removed="true"/>
+        <key command="NewLayer" shortcut="Shift+N" removed="true"/>
+        <key command="NewLayer" shortcut="Alt+Shift+A"/>
+        <key command="GotoNextLayer" context="Normal" shortcut="Up" removed="true"/>
+        <key command="GotoNextLayer" context="Normal" shortcut="A"/>
+        <key command="NewFrame" shortcut="Alt+N" removed="true"/>
+        <key command="NewFrame" shortcut="Alt+A"/>
+        <key command="PlayAnimation" shortcut="Enter" removed="true"/>
+        <key command="PlayAnimation" shortcut="`"/>
+        <key command="Zoom" shortcut="`" removed="true">
+            <param name="percentage" value="50"/>
+        </key>
+        <key command="SymmetryMode" shortcut="Ctrl+~">
+            <param name="orientation" value="horizontal"/>
+        </key>
+        <key command="RemoveLayer" shortcut="Ctrl+Shift+C" removed="true"/>
+        <key command="RemoveLayer" shortcut="Alt+Shift+C"/>
+    </commands>
+    <tools>
+        <key tool="rectangular_marquee" shortcut="M" removed="true"/>
+        <key tool="rectangular_marquee" shortcut="Q"/>
+        <key tool="lasso" shortcut="Q" removed="true"/>
+        <key tool="lasso" shortcut="M"/>
+        <key tool="rectangle" shortcut="U" removed="true"/>
+        <key tool="rectangle" shortcut="T"/>
+        <key tool="ellipse" shortcut="Shift+U" removed="true"/>
+        <key tool="ellipse" shortcut="Shift+T"/>
+        <key tool="text" shortcut="T" removed="true"/>
+    </tools>
+    <quicktools/>
+    <actions/>
+    <wheel/>
+    <drag/>
+</keyboard>
