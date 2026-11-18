@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <keyboard version="1">
     <commands>
+        <key command="Cut" shortcut="Ctrl+X" removed="true"/>
         <key command="CopyMerged" shortcut="Ctrl+Shift+C" removed="true"/>
+        <key command="LayerVisibility" shortcut="Shift+X" removed="true"/>
+        <key command="LayerVisibility" shortcut="Ctrl+X"/>
         <key command="NewLayer" shortcut="Shift+N" removed="true"/>
         <key command="NewLayer" shortcut="Alt+Shift+A"/>
         <key command="GotoNextLayer" context="Normal" shortcut="Up" removed="true"/>
@@ -10,8 +13,17 @@
         <key command="NewFrame" shortcut="Alt+A"/>
         <key command="PlayAnimation" shortcut="Enter" removed="true"/>
         <key command="PlayAnimation" shortcut="`"/>
+        <key command="ChangeBrush" shortcut="+" removed="true">
+            <param name="change" value="increment-size"/>
+        </key>
         <key command="Zoom" shortcut="`" removed="true">
             <param name="percentage" value="50"/>
+        </key>
+        <key command="Zoom" shortcut="1" removed="true">
+            <param name="percentage" value="100"/>
+        </key>
+        <key command="Zoom" shortcut="+">
+            <param name="percentage" value="100"/>
         </key>
         <key command="SymmetryMode" shortcut="Ctrl+~">
             <param name="orientation" value="horizontal"/>
