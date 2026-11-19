@@ -16,13 +16,13 @@ return {
 			"                  育          育            ",
 			"                 育育育育育育育育           ",
 			"               謙虚な人を目指したい         ",
-			"               (けんきょ)                   ",
+			"               (けんきょ)  (育てる)         ",
 		}
 
 		dashboard.section.buttons.val = {
 			dashboard.button("e", "  新しいファイル", "<cmd>ene <BAR> startinsert <cr>"),
 			dashboard.button("d", "  Database UI (Dadbod)", "<cmd>DBUIToggle<cr>"),
-			dashboard.button("q", "󰅚  終了(しゅうりょう)", "<cmd>qa<cr>"),
+			dashboard.button("q", "󰅚  終了", "<cmd>qa<cr>"),
 		}
 
 		local stats = require("lazy").stats()
